@@ -1,0 +1,30 @@
+# Ignore the .env file that contains sensitive data
+.env
+.env.local
+
+# Ignore the vendor directory
+/vendor/
+
+# Ignore the var directory (temporary files, cache, logs, etc.)
+/var/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore the IDE configuration files
+.idea/
+.vscode/
+
+# Ignore other files
+*.log
+*.swp
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
