@@ -1,0 +1,26 @@
+{% block title %}Cr�er un lien{% endblock %}
+
+{% block body %}
+<h1>Cr�er un lien</h1>
+
+<form action="{{ path('link_create') }}" method="POST">
+    {{ form_start(form) }}
+
+    {{ form_row(form.customerName) }}
+    {{ form_row(form.startDate) }}
+    {{ form_row(form.endDate) }}
+    {{ form_row(form.customerPhoneNumber) }}
+    {{ form_row(form.customerEmail) }}
+
+    {# Afficher le lien g�n�r� avant l'envoi #}
+    <div>
+        <strong>Lien g�n�r� : </strong>
+        <span>{{ generated_link }}</span>
+    </div>
+
+    <button type="submit">Cr�er le lien</button>
+    
+    {{ form_end(form) }}
+</form>
+
+{% endblock %}
