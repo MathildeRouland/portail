@@ -3,7 +3,7 @@
 .env.local
 
 # Ignore the vendor directory
-/vendor/
+vendor/
 
 # Ignore the var directory (temporary files, cache, logs, etc.)
 /var/
