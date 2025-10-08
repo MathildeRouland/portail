@@ -20,7 +20,7 @@ class OpeningHistory
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $openingDate = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'bigint', nullable: true)]
     private ?int $IpAdress = null;
 
     public function getId(): ?int

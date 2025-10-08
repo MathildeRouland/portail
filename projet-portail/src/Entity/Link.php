@@ -6,6 +6,7 @@ use App\Repository\LinkRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: LinkRepository::class)]
 class Link
 {
@@ -44,7 +45,7 @@ class Link
     #[ORM\Column]
     private ?bool $status = null;
 
-    #[ORM\ManyToOne(inversedBy: 'link')]
+    #[ORM\ManyToOne(inversedBy: 'links')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $creator = null;
 

@@ -31,7 +31,7 @@ final class UserController extends AbstractController
     #[Route('/users', name: 'user_browse')]
     public function browse(UserRepository $userRepository): Response
 {
-     // R�cup�rer tous les utilisateurs
+     // Récupérer tous les utilisateurs
      $users = $userRepository->findAll();
 
      // Passer les utilisateurs au template
@@ -70,7 +70,7 @@ public function createUser(
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return new Response('Utilisateur cr�� avec succ�s.');
+        return new Response('Utilisateur créé avec succès.');
     }
 
     return $this->render('user/create.html.twig');

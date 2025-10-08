@@ -95,13 +95,66 @@ public function createLink(Request $request, EntityManagerInterface $em, Securit
       ]);
   }
 
-  // Fonction pour générer un lien basé sur le nom du client et 4 caractères aléatoires
-  protected function generateLinkUrl(Link $link): string
-  {
-      // Générer un lien unique basé sur le nom du client et 4 caractères aléatoires
-      $randomChars = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4);
-      return $link->getCustomerName() . '-' . $randomChars; // Exemple de génération de lien
-  }
+//   // Fonction pour générer un lien basé sur le nom du client et 4 caractères aléatoires
+//   protected function generateLinkUrl(Link $link): string
+//   {
+//       // Générer un lien unique basé sur le nom du client et 4 caractères aléatoires
+//       $randomChars = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4);
+//       return $link->getCustomerName() . '-' . $randomChars; // Exemple de génération de lien
+//   }
+
+#[Route('/{fullUrl}', name: 'link_open')]
+public function openLink(string $fullUrl, Request $request, EntityManagerInterface $em): Response
+{
+    // Recréer l'URL complète attendue
+    $currentUrl = $request->getSchemeAndHttpHost() . '/' . $fullUrl;
+
+    // Chercher le lien en base via l'URL complète
+    $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+
+    if (!$link) {
+        return $this->redirectToRoute('homepage'); // lien inexistant
+    }
+
+    $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+    $status = false; // statut invalide
+    $start = $link->getStartDate()->setTimezone(new \DateTimeZone('Europe/Paris'));
+    $end = $link->getEndDate()->setTimezone(new \DateTimeZone('Europe/Paris'));
+    if ($link->isStatus() || $start < $now || $end > $now) {
+        $status = true; // tentative valide
+    }
+    
+
+    // Enregistrer l'ouverture dans l'historique
+    $history = new \App\Entity\OpeningHistory();
+    $history->setStatus($status);
+    $history->setOpeningDate($now);
+
+    // Récupérer l'IP du client
+    $clientIp = $request->getClientIp();
+    if ($clientIp !== null) {
+        $history->setIpAdress(ip2long($clientIp)); // convertir IP en int
+    }
+
+    $em->persist($history);
+    $em->flush();
+
+    // Si le lien est valide, ex�cuter le script Python
+    if ($status) {
+        $duration = 2; // secondes
+        $command = escapeshellcmd('python3 ' . $this->getParameter('kernel.project_dir') . '/test_gpio.py ' . $duration);
+        exec($command);
+    }
+
+    // Affichage de la page
+    if ($status) {
+        return $this->render('link/open.html.twig', [
+            'message' => 'Portail ouvert !',
+        ]);
+    } else {
+        return $this->render('link/expired.html.twig');
+    }
+}
 }
 
 
