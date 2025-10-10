@@ -23,19 +23,39 @@ security:
             logout:
                 path: app_logout
                 # where to redirect after logout
-                # target: app_any_route
-
+                target: app_login
+            remember_me:
+                    secret: '%kernel.secret%'
+                    lifetime: 604800 # 7 jours
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
+    # Définition de la hiérarchie des rôles
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+    
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+    # Login et logout accessibles sans être connecté
+    - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/logout, roles: PUBLIC_ACCESS }
+    
+    # Route link_open accessible sans authentification
+    - { path: ^/open/, roles: PUBLIC_ACCESS }
+    
+    # Liens gérés uniquement par les admins
+    - { path: ^/links, roles: ROLE_ADMIN }
+
+    # Users gérés uniquement par les super-admins
+    - { path: ^/users, roles: ROLE_SUPER_ADMIN }
+
+    # Le reste du site accessible aux utilisateurs connectés
+    - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

@@ -1,16 +1,44 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Portail Thoiry{% endblock %}</title>
 
-        {% block javascripts %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('asset/css/style.css') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+        <script src="{{ asset('asset/js/generateLink.js') }}"></script>
+    {% endblock %}
+</head>
+<body>
+
+<header>
+    <h1>Portail de l’Orangerie</h1>
+    <nav>
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <a href="{{ path('link_create') }}">Créer un lien</a>
+        <a href="{{ path('link_browse') }}">Gérer mes liens</a>
+        <a href="{{ path('user_browse') }}">Gérer les utilisateurs</a>
+        <a href="{{ path('app_logout') }}">Déconnexion</a>
+    {% elseif is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('link_create') }}">Créer un lien</a>
+        <a href="{{ path('link_browse') }}">Gérer mes liens</a>
+        <a href="{{ path('app_logout') }}">Déconnexion</a>
+    {% else %}
+        <a href="{{ path('app_login') }}">Me connecter</a>
+    {% endif %}
+</nav>
+</header>
+
+<main>
+   
+    
+    {% block body %}{% endblock %}
+</main>
+
+<footer>
+    © {{ "now"|date("Y") }} L’Orangerie de Thoiry — Tous droits réservés
+</footer>
+
+</body>
 </html>

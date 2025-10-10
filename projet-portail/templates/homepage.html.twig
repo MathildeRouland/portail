@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Bienvenue {% endblock %}
+
+{% block body %}
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
+       <h1>Bienvenue sur le backoffice de l'Orangerie</h1>
+    {% else %}
+        <h1>Vous n'êtes pas autorisé à accéder à ce site</h1>
+    {% endif %}
+{% endblock %}
