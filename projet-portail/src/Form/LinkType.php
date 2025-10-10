@@ -31,14 +31,14 @@ class LinkType extends AbstractType
             ->add('createdAt', null, [
                 'widget' => 'single_text',
             ])
-            // ->add('updatedAt', null, [
-            //     'widget' => 'single_text',
-            // ])
+            ->add('updatedAt', null, [
+                'widget' => 'single_text',
+            ])
             ->add('status')
             ->add('creator', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'username', // Affiche le username
-                'data' => $currentUser, // Pr�-s�lection du user connect�
+                'data' => $currentUser, // Pré-sélection du user connecté
             ])
             ->add('updater', EntityType::class, [
                 'class' => User::class,

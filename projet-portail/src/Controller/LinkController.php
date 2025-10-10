@@ -29,14 +29,22 @@ final class LinkController extends AbstractController
 //     }
 
     #[Route('/links', name: 'link_browse')]
-    public function browse(LinkRepository $linkRepository): Response
+    public function browse(LinkRepository $linkRepository, Security $security): Response
     {
-        // Récupérer tous les liens
-        $links = $linkRepository->findAll();
+        $user = $security->getUser();
+        
+        // Si c'est un super admin, on peut afficher tous les liens
+        if ($this->isGranted('ROLE_SUPER_ADMIN')) {
+            $links = $linkRepository->findAll();
+        } else {
+            // Sinon, on ne récupère que les liens créés par l'utilisateur connecté
+            $links = $linkRepository->findBy(['creator' => $user]);
+        }
 
-        // Passer les liens au template
+        // Passer les liens et l'utilisateur au template
         return $this->render('link/browse.html.twig', [
             'links' => $links,
+            'user' => $user
         ]);
     }
 
@@ -51,7 +59,8 @@ public function createLink(Request $request, EntityManagerInterface $em, Securit
       if ($user) {
           $link->setCreator($user);
       } else {
-          return $this->redirectToRoute('app_login');  // Rediriger vers la page de login si l'utilisateur n'est pas connect�
+        // Rediriger vers la page de login si l'utilisateur n'est pas connecté
+          return $this->redirectToRoute('app_login');  
       }
 
       $form = $this->createForm(LinkType::class, $link, [
@@ -66,7 +75,7 @@ public function createLink(Request $request, EntityManagerInterface $em, Securit
 
          // Créer l'URL
          $baseUrl = $request->getSchemeAndHttpHost(); // Ex: http://localhost
-         $url = $baseUrl . "/" . urlencode($link->getCustomerName()) . '-' . $code;
+         $url = $baseUrl . "/open/" . urlencode($link->getCustomerName()) . '-' . $code;
          $link->setUrl($url);
 
         // Définir automatiquement creator/updater 
@@ -103,11 +112,11 @@ public function createLink(Request $request, EntityManagerInterface $em, Securit
 //       return $link->getCustomerName() . '-' . $randomChars; // Exemple de génération de lien
 //   }
 
-#[Route('/{fullUrl}', name: 'link_open')]
+#[Route('/open/{fullUrl}', name: 'link_open')]
 public function openLink(string $fullUrl, Request $request, EntityManagerInterface $em): Response
 {
     // Recréer l'URL complète attendue
-    $currentUrl = $request->getSchemeAndHttpHost() . '/' . $fullUrl;
+    $currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
 
     // Chercher le lien en base via l'URL complète
     $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);

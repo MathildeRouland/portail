@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 #[ORM\Entity(repositoryClass: LinkRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Link
 {
     #[ORM\Id]
@@ -200,5 +201,33 @@ class Link
         $this->updater = $updater;
 
         return $this;
+    }
+    
+    /**
+     * Vérifie si la date de fin est passée et met à jour le statut en conséquence
+     * Cette méthode est appelée automatiquement avant chaque persistance
+     */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function updateStatus(): void
+    {
+        // Si la date de fin est définie et qu'elle est passée, on met le statut à false (0)
+        if ($this->endDate !== null && $this->endDate < new \DateTime()) {
+            $this->status = false;
+        } else {
+            // Si la date de fin n'est pas définie ou n'est pas encore passée, on met le statut à true (1)
+            $this->status = true;
+        }
+    }
+    
+    /**
+     * Vérifie si le lien est encore valide (date de fin non passée)
+     * 
+     * @return bool True si le lien est valide, False sinon
+     */
+    public function isValid(): bool
+    {
+        $this->updateStatus();
+        return $this->status;
     }
 }
