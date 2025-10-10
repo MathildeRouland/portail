@@ -1,0 +1,220 @@
+:root {
+    --main-bg-color: #363340;
+    --main-text-color: #b5a279;
+    --accent-color: #e6d5b8;
+    --light-bg: #f8f7f5;
+    --white: #ffffff;
+    --transition: 0.3s ease;
+  }
+  
+  body {
+    margin: 0;
+    font-family: "Cormorant Garamond", serif;
+    background-color: var(--light-bg);
+    color: var(--main-bg-color);
+    line-height: 1.6;
+  }
+  
+  /* ===== HEADER ===== */
+  header {
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  header h1, header .logo {
+    font-family: "Playfair Display", serif;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    color: var(--main-text-color);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  
+  nav a {
+    color: var(--main-text-color);
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color var(--transition);
+    font-weight: 500;
+  }
+  
+  nav a:hover {
+    color: var(--accent-color);
+  }
+  
+  /* ===== MAIN CONTENT ===== */
+  main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* ===== BUTTONS ===== */
+  button,
+  .btn {
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+    border: 1px solid var(--main-text-color);
+    padding: 0.6rem 1.2rem;
+    text-transform: uppercase;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color var(--transition), color var(--transition);
+    font-weight: 600;
+  }
+  
+  button:hover,
+  .btn:hover {
+    background-color: var(--main-text-color);
+    color: var(--main-bg-color);
+  }
+  
+  /* ===== TABLES ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+  
+  table th, table td {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+  }
+  
+  table th {
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+    text-align: left;
+  }
+  
+  table tr:nth-child(even) {
+    background-color: #f3f3f3;
+  }
+  
+/* ===== FORMS ===== */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--main-bg-color);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.7rem;
+    box-sizing: border-box;
+    max-width: 400px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--main-text-color);
+    box-shadow: 0 0 5px rgba(181, 162, 121, 0.5);
+}
+
+.form-actions {
+    margin-top: 2rem;
+}
+
+.btn-primary {
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+    padding: 0.7rem 1.5rem;
+    border: 1px solid var(--main-text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color var(--transition), color var(--transition);
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: var(--main-text-color);
+    color: var(--main-bg-color);
+}
+
+.form-error {
+    color: #d9534f;
+    margin-top: 0.3rem;
+    font-size: 0.9rem;
+}
+
+/* ===== STATUS INDICATORS ===== */
+.status-active {
+    background-color: #28a745;
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status-inactive {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.btn-sm {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
+    border-radius: 3px;
+    display: inline-block;
+    text-decoration: none;
+    margin-right: 0.3rem;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+  
+  /* ===== FOOTER ===== */
+  footer {
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+    text-align: center;
+    padding: 1.5rem 0;
+    font-size: 0.9rem;
+    margin-top: 3rem;
+    letter-spacing: 0.5px;
+  }
+  
+  footer a {
+    color: var(--main-text-color);
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  footer a:hover {
+    color: var(--accent-color);
+  }
