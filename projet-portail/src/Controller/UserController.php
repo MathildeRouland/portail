@@ -27,6 +27,12 @@ final class UserController extends AbstractController
     //         'path' => 'src/Controller/UserController.php',
     //     ]);
     // }
+    #[Route('/', name: 'homepage')]
+    public function home ()
+{
+     // Passer les utilisateurs au template
+     return $this->render('homepage.html.twig');
+}
 
     #[Route('/users', name: 'user_browse')]
     public function browse(UserRepository $userRepository): Response
@@ -45,35 +51,47 @@ public function createUser(
     Request $request,
     UserRepository $userRepository,
     UserPasswordHasherInterface $passwordHasher,
-    CsrfTokenManagerInterface $csrfTokenManager,
-    EntityManagerInterface $entityManager
+    EntityManagerInterface $entityManager,
+    CsrfTokenManagerInterface $csrfTokenManager
 ): Response {
-    if ($request->isMethod('POST')) {
+    // Vérification que seul un ROLE_SUPER_ADMIN peut créer des utilisateurs
+    if (!$this->isGranted('ROLE_SUPER_ADMIN')) {
+        throw new AccessDeniedHttpException('Seuls les super administrateurs peuvent créer des utilisateurs.');
+    }
+    
+    $user = new User();
+    $form = $this->createForm(\App\Form\UserType::class, $user, [
+        'current_user' => $this->getUser(),
+    ]);
+    
+    $form->handleRequest($request);
+    
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Vérification explicite du token CSRF
         $submittedToken = $request->request->get('_csrf_token');
-
         if (!$csrfTokenManager->isTokenValid(new CsrfToken('create_user', $submittedToken))) {
             throw new \RuntimeException('Jeton CSRF invalide.');
         }
-
-        $email = $request->request->get('email');
-        $plainPassword = $request->request->get('password');
-        $username = $request->request->get('username');
-
-        $user = new User();
-        $user->setUsername($username);
-        $user->setEmail($email);
-
+        
+        // Hash du mot de passe
+        $plainPassword = $form->get('password')->getData();
         $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
-        $user->setRoles(['ROLE_USER']);
-
+        
+        // Récupérer le rôle sélectionné
+        $role = $form->get('roles')->getData();
+        $user->setRoles([$role]);
+        
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return new Response('Utilisateur créé avec succès.');
+        $this->addFlash('success', 'Utilisateur "' . $user->getUsername() . '" créé avec succès avec le rôle ' . $role);
+        return $this->redirectToRoute('user_browse');
     }
 
-    return $this->render('user/create.html.twig');
+    return $this->render('user/create.html.twig', [
+        'form' => $form->createView(),
+    ]);
 }
 
 }
