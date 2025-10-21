@@ -6,19 +6,19 @@ use App\Entity\Link;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class LinkType extends AbstractType
+class LinkEditType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-         /** @var User|null $currentUser */
-    $currentUser = $options['current_user'];
+        /** @var User|null $currentUser */
+        $currentUser = $options['current_user'];
 
         $builder
             ->add('customerName', TextType::class, [
@@ -51,8 +51,27 @@ class LinkType extends AbstractType
                 'label' => 'Actif',
                 'required' => false,
             ])
-            
-            // creator/updater/createdAt are set in the controller/entity lifecycle and shouldn't be part of the create form
+            // Champs cachés qui seront gérés par le contrôleur
+            ->add('creator', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'username',
+                'data' => $currentUser,
+                'disabled' => true,
+            ])
+            ->add('updater', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'username',
+                'data' => $currentUser,
+                'disabled' => true,
+            ])
+            #->add('createdAt', DateTimeType::class, [
+            #    'widget' => 'single_text',
+            #    'disabled' => true,
+            #])
+            ->add('updatedAt', DateTimeType::class, [
+                'widget' => 'single_text',
+                'disabled' => true,
+            ])
         ;
     }
 
@@ -60,7 +79,7 @@ class LinkType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Link::class,
-            'current_user' => null, 
+            'current_user' => null,
         ]);
     }
 }
