@@ -3,10 +3,57 @@
 {% block title %} Liste des utilisateurs {% endblock %}
 
 {% block body %}
-    <h1>Liste des utilisateurs</h1>
-    <ul>
-        {% for user in users %}
-            <li>{{ user.username }} ({{ user.email }})</li>
-        {% endfor %}
-    </ul>
+    <h1>
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            Liste de tous les créateurs de liens
+    </h1>
+
+            {% if users is empty %}
+                <p>Aucun utilisateur n'a été créé pour le moment.</p>
+            {% else %}
+                <div class="table-actions">
+                    <a href="{{ path('user_create') }}" class="btn btn-sm">Créer un utilisateur</a>
+                </div>
+                <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom d'utilisateur</th>
+                            <th>Rôles</th>
+                            <th>Email</th>
+                            <th>Liens</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td data-label="Nom d'utilisateur">{{ user.username }}</td>
+                                <td data-label="Rôles">{{ user.getRoles()|join(', ') }}</td>
+                                <td data-label="Email">{{ user.email }}</td>
+                                <td data-label="Liens">
+                                    {% set links = user.getLinks() %}
+                                    {% if links is empty %}
+                                        -
+                                    {% else %}
+                                        <ul class="user-links">
+                                        {% for link in links %}
+                                            <a href="{{ link.url }}" target="_blank">{{ link.url ?: link.url }}</a>
+                                        {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Actions">
+                                    <div class="action-btns">
+                                        <a href="{{ path('user_edit', {'id': user.id}) }}" class="btn btn-sm btn-action">Modifier</a>
+                                        <a href="#" class="btn btn-sm btn-danger btn-action">Supprimer</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            {% endif %}
+        {% endif %}
 {% endblock %}
