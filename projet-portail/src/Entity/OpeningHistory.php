@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\OpeningHistoryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Link;
 
 #[ORM\Entity(repositoryClass: OpeningHistoryRepository::class)]
 class OpeningHistory
@@ -20,8 +21,18 @@ class OpeningHistory
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $openingDate = null;
 
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private ?int $IpAdress = null;
+    #[ORM\ManyToOne(targetEntity: Link::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Link $link = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $url = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $customerName = null;
+
+    #[ORM\Column(length: 45, nullable: true)]
+    private ?string $IpAdress = null;
 
     public function getId(): ?int
     {
@@ -52,12 +63,47 @@ class OpeningHistory
         return $this;
     }
 
-    public function getIpAdress(): ?int
+        public function getLink(): ?Link
+    {
+        return $this->link;
+    }
+
+    public function setLink(?Link $link): static
+    {
+        $this->link = $link;
+        return $this;
+    }
+
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): static
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getCustomerName(): ?string
+    {
+        return $this->customerName;
+    }
+    public function setCustomerName(?string $customerName): static
+    {
+        $this->customerName = $customerName;
+
+        return $this;
+    }
+
+    public function getIpAdress(): ?string
     {
         return $this->IpAdress;
     }
 
-    public function setIpAdress(int $IpAdress): static
+    public function setIpAdress(?string $IpAdress): static
     {
         $this->IpAdress = $IpAdress;
 
