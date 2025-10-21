@@ -16,9 +16,16 @@ class UserType extends AbstractType
         $currentUser = $options['current_user'];
 
         $builder
-            ->add('username')
-            ->add('email')
+            ->add('username', null, [
+                'label' => 'Nom d\'utilisateur',
+                'required' => true,
+            ])
+            ->add('email', null, [
+                'label' => 'Email',
+                'required' => true,
+            ])
             ->add('password', \Symfony\Component\Form\Extension\Core\Type\PasswordType::class, [
+                'label' => 'Mot de passe',
                 'mapped' => false,
                 'required' => true,
             ])
