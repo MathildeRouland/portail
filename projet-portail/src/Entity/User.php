@@ -39,6 +39,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Link::class, orphanRemoval: true)]
     private Collection $links;
 
+    public function __construct()
+    {
+        $this->links = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|\App\Entity\Link[]
+     */
+    public function getLinks(): Collection
+    {
+        return $this->links;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

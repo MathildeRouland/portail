@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 
@@ -94,4 +95,46 @@ public function createUser(
     ]);
 }
 
+#[Route('/users/{id}/edit', name: 'user_edit')]
+public function updateUser(Request $request, EntityManagerInterface $em, Security $security, int $id): Response
+{
+    // Récupérer l'utilisateur à modifier
+    $userToUpdate = $em->getRepository(User::class)->find($id);
+    if (!$userToUpdate) {
+        throw $this->createNotFoundException('Utilisateur non trouvé.');
+    }
+
+    // Vérification que seul un ROLE_SUPER_ADMIN peut modifier des utilisateurs
+    if (!$this->isGranted('ROLE_SUPER_ADMIN')) {
+        throw new AccessDeniedHttpException('Seuls les super administrateurs peuvent modifier des utilisateurs.');
+    }
+
+    $form = $this->createForm(\App\Form\UserEditType::class, $userToUpdate, [
+        'current_user' => $this->getUser(),
+    ]);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Hash du mot de passe si un nouveau mot de passe est fourni
+        //$plainPassword = $form->get('password')->getData();
+        //if ($plainPassword) {
+          //  $hashedPassword = $passwordHasher->hashPassword($userToUpdate, $plainPassword);
+            //$userToUpdate->setPassword($hashedPassword);
+        //}
+
+        // Récupérer le rôle sélectionné
+        $role = $form->get('roles')->getData();
+        $userToUpdate->setRoles([$role]);
+
+        $em->flush();
+
+        $this->addFlash('success', 'Utilisateur "' . $userToUpdate->getUsername() . '" mis à jour avec succès avec le rôle ' . $role);
+        return $this->redirectToRoute('user_browse');
+    }
+
+    return $this->render('user/edit.html.twig', [
+        'form' => $form->createView(),
+        'user' => $userToUpdate,
+    ]);
+}
 }
