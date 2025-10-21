@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Portail Thoiry{% endblock %}</title>
 
     {% block stylesheets %}
@@ -19,10 +20,16 @@
         <a href="{{ path('link_create') }}">Créer un lien</a>
         <a href="{{ path('link_browse') }}">Gérer mes liens</a>
         <a href="{{ path('user_browse') }}">Gérer les utilisateurs</a>
+        {% if app.user %}
+               {{ app.user.userIdentifier }}
+        {% endif %}
         <a href="{{ path('app_logout') }}">Déconnexion</a>
     {% elseif is_granted('ROLE_ADMIN') %}
         <a href="{{ path('link_create') }}">Créer un lien</a>
         <a href="{{ path('link_browse') }}">Gérer mes liens</a>
+        {% if app.user %}
+                {{ app.user.userIdentifier }}
+        {% endif %}
         <a href="{{ path('app_logout') }}">Déconnexion</a>
     {% else %}
         <a href="{{ path('app_login') }}">Me connecter</a>
@@ -41,4 +48,7 @@
 </footer>
 
 </body>
+{% block javascripts %}
+    <script src="{{ asset('asset/js/link-permanent.js') }}"></script>
+{% endblock %}
 </html>
