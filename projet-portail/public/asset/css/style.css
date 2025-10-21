@@ -1,6 +1,6 @@
 :root {
     --main-bg-color: #363340;
-    --main-text-color: #b5a279;
+    --main-text-color: #b79f63;
     --accent-color: #e6d5b8;
     --light-bg: #f8f7f5;
     --white: #ffffff;
@@ -36,11 +36,12 @@
   }
   
   nav a {
-    color: var(--main-text-color);
+    color: var(--white);
+    font-size: 1.2rem;
     text-decoration: none;
     margin: 0 1rem;
     transition: color var(--transition);
-    font-weight: 500;
+    font-weight: 700;
   }
   
   nav a:hover {
@@ -98,6 +99,45 @@
   table tr:nth-child(even) {
     background-color: #f3f3f3;
   }
+
+/* Mobile: table to cards */
+@media (max-width: 600px) {
+  table thead {
+    display: none;
+  }
+
+  table, table tbody, table tr, table td {
+    display: block;
+    width: 100%;
+  }
+
+  table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  table td {
+    padding: 0.5rem 0;
+    border: none;
+    position: relative;
+  }
+
+  table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    display: block;
+    color: var(--main-bg-color);
+    margin-bottom: 0.25rem;
+  }
+
+  .user-links {
+    padding-left: 1rem;
+    margin: 0;
+  }
+}
   
 /* ===== FORMS ===== */
 .form-group {
@@ -197,6 +237,19 @@
     background-color: #c82333;
     border-color: #bd2130;
 }
+
+/* Griser un champ désactivé */
+.disabled-field {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Pour s'assurer que les boutons du datepicker sont aussi visuellement désactivés */
+.disabled-field input,
+.disabled-field select {
+  background-color: #f3f3f3;
+  color: #6c757d;
+}
   
   /* ===== FOOTER ===== */
   footer {
@@ -218,3 +271,87 @@
   footer a:hover {
     color: var(--accent-color);
   }
+
+/* ===== USER BROWSE ACTIONS ===== */
+.table-actions {
+  margin-bottom: 1rem;
+}
+
+.action-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-action {
+  flex: 1 1 0; /* make buttons grow equally */
+  text-align: center;
+}
+
+/* ===== RESPONSIVE LAYOUT ===== */
+@media (max-width: 900px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  nav {
+    width: 100%;
+  }
+
+  nav a {
+    display: inline-block;
+    margin: 0.25rem 0.5rem 0.25rem 0;
+    font-size: 1rem;
+  }
+
+  main {
+    padding: 1rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    max-width: 100%;
+  }
+
+  .action-btns {
+    gap: 0.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  nav a {
+    display: block;
+    margin: 0.25rem 0;
+  }
+
+  /* Make buttons full width on small screens */
+  .action-btns {
+    flex-direction: column;
+  }
+
+  .btn-action {
+    width: 100%;
+  }
+
+  /* Table responsive container: allow horizontal scroll */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .action-btns { flex-direction: column; }
+}
