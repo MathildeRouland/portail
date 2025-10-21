@@ -22,6 +22,11 @@
     {{ form_errors(form.endDate, {'attr': {'class': 'form-error'}}) }}
 </div>
 <div class="form-group">
+    {{ form_label(form.permanent) }}
+    {{ form_widget(form.permanent) }}
+    {{ form_errors(form.permanent, {'attr': {'class': 'form-error'}}) }}
+</div>
+<div class="form-group">
     {{ form_label(form.customerPhoneNumber) }}
     {{ form_widget(form.customerPhoneNumber) }}
     {{ form_errors(form.customerPhoneNumber, {'attr': {'class': 'form-error'}}) }}
@@ -31,35 +36,18 @@
     {{ form_widget(form.customerEmail) }}
     {{ form_errors(form.customerEmail, {'attr': {'class': 'form-error'}}) }}
 </div>
-<div class="form-group">
-    {{ form_label(form.createdAt) }}
-    {{ form_widget(form.createdAt) }}
-    {{ form_errors(form.createdAt, {'attr': {'class': 'form-error'}}) }}
-</div>
-<div class="form-group">
-    {{ form_label(form.updatedAt) }}
-    {{ form_widget(form.updatedAt) }}
-    {{ form_errors(form.updatedAt, {'attr': {'class': 'form-error'}}) }}
-</div>
-<div class="form-group">
-    {{ form_label(form.creator) }}
-    {{ form_widget(form.creator) }}
-    {{ form_errors(form.creator, {'attr': {'class': 'form-error'}}) }}
-</div>
-<div class="form-group">
-    {{ form_label(form.updater) }}
-    {{ form_widget(form.updater) }}
-    {{ form_errors(form.updater, {'attr': {'class': 'form-error'}}) }}
-</div>
 
+{# Les champs creator/updater/createdAt sont gérés automatiquement, ne pas les rendre dans le formulaire de création #}
     {# Afficher le lien généré avant l'envoi #}
     <div>
         <strong>Lien généré : </strong>
         <span>{{ generated_link }}</span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Créer le lien</button>
-    
-{{ form_end(form) }}
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Créer le lien</button>
+    </div>
+
+{{ form_end(form, {'render_rest': true}) }}
 
 {% endblock %}

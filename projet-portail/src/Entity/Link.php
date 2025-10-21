@@ -40,11 +40,14 @@ class Link
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column]
     private ?bool $status = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $permanent = false;
 
     #[ORM\ManyToOne(inversedBy: 'links')]
     #[ORM\JoinColumn(nullable: false)]
@@ -179,6 +182,18 @@ class Link
         return $this;
     }
 
+    public function isPermanent(): bool
+    {
+        return $this->permanent;
+    }
+
+    public function setPermanent(bool $permanent): static
+    {
+        $this->permanent = $permanent;
+
+        return $this;
+    }
+
     public function getCreator(): ?User
     {
         return $this->creator;
@@ -211,6 +226,12 @@ class Link
     #[ORM\PreUpdate]
     public function updateStatus(): void
     {
+        // Si le lien est permanent, il est toujours actif
+        if ($this->permanent) {
+            $this->status = true;
+            return;
+        }
+
         // Si la date de fin est définie et qu'elle est passée, on met le statut à false (0)
         if ($this->endDate !== null && $this->endDate < new \DateTime()) {
             $this->status = false;
@@ -229,5 +250,27 @@ class Link
     {
         $this->updateStatus();
         return $this->status;
+    }
+
+    /**
+     * Set createdAt automatically when the entity is first persisted
+     */
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $now = new \DateTime();
+
+        if ($this->createdAt === null) {
+            $this->createdAt = $now;
+        }
+    }
+
+    /**
+     * Update updatedAt automatically on each update
+     */
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTime();
     }
 }

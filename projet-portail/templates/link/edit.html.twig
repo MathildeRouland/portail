@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un lien{% endblock %}
+
+{% block body %}
+    <h1>Modifier un lien</h1>
+    
+    <div class="link-details">
+        <p>Lien créé pour: <strong>{{ link.customerName }}</strong></p>
+        <p>URL: <a href="{{ link.url }}" target="_blank">{{ link.url }}</a></p>
+    </div>
+
+    {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.customerName) }}
+            {{ form_widget(form.customerName) }}
+            {{ form_errors(form.customerName, {'attr': {'class': 'form-error'}}) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.startDate) }}
+            {{ form_widget(form.startDate) }}
+            {{ form_errors(form.startDate, {'attr': {'class': 'form-error'}}) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.endDate) }}
+            {{ form_widget(form.endDate) }}
+            {{ form_errors(form.endDate, {'attr': {'class': 'form-error'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.permanent) }}
+            {{ form_widget(form.permanent) }}
+            {{ form_errors(form.permanent, {'attr': {'class': 'form-error'}}) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.customerPhoneNumber) }}
+            {{ form_widget(form.customerPhoneNumber) }}
+            {{ form_errors(form.customerPhoneNumber, {'attr': {'class': 'form-error'}}) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.customerEmail) }}
+            {{ form_widget(form.customerEmail) }}
+            {{ form_errors(form.customerEmail, {'attr': {'class': 'form-error'}}) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.status) }}
+            {{ form_widget(form.status) }}
+            {{ form_errors(form.status, {'attr': {'class': 'form-error'}}) }}
+        </div>
+        
+        {# Champs cachés qui ne devraient pas être modifiés directement par l'utilisateur #}
+        <div style="display: none;">
+            {{ form_row(form.creator) }}
+            {{ form_row(form.updater) }}
+            {{ form_row(form.createdAt) }}
+            {{ form_row(form.updatedAt) }}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+            <a href="{{ path('link_browse') }}" class="btn">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}
+
+{# JavaScript global chargé via base.html.twig (public/asset/js/link-permanent.js) #}

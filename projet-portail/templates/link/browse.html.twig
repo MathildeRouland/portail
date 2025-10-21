@@ -50,7 +50,7 @@
                             <td>{{ link.creator.username }}</td>
                         {% endif %}
                         <td>
-                            <a href="#" class="btn btn-sm">Modifier</a>
+                            <a href="{{ path('link_edit', {'id': link.id}) }}" class="btn btn-sm">Modifier</a>
                             <a href="#" class="btn btn-sm btn-danger">Supprimer</a>
                         </td>
                     </tr>
