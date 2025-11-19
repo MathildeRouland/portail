@@ -51,27 +51,6 @@ class LinkEditType extends AbstractType
                 'label' => 'Actif',
                 'required' => false,
             ])
-            // Champs cachés qui seront gérés par le contrôleur
-            ->add('creator', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'username',
-                'data' => $currentUser,
-                'disabled' => true,
-            ])
-            ->add('updater', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'username',
-                'data' => $currentUser,
-                'disabled' => true,
-            ])
-            #->add('createdAt', DateTimeType::class, [
-            #    'widget' => 'single_text',
-            #    'disabled' => true,
-            #])
-            ->add('updatedAt', DateTimeType::class, [
-                'widget' => 'single_text',
-                'disabled' => true,
-            ])
         ;
     }
 

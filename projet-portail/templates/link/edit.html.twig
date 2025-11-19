@@ -51,14 +51,6 @@
             {{ form_widget(form.status) }}
             {{ form_errors(form.status, {'attr': {'class': 'form-error'}}) }}
         </div>
-        
-        {# Champs cachés qui ne devraient pas être modifiés directement par l'utilisateur #}
-        <div style="display: none;">
-            {{ form_row(form.creator) }}
-            {{ form_row(form.updater) }}
-            {{ form_row(form.createdAt) }}
-            {{ form_row(form.updatedAt) }}
-        </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
