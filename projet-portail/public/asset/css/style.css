@@ -71,6 +71,10 @@
     transition: background-color var(--transition), color var(--transition);
     font-weight: 600;
   }
+
+  .btn-normal {
+    font-weight: normal;
+  }
   
   button:hover,
   .btn:hover {

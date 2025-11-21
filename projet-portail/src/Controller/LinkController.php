@@ -14,10 +14,7 @@ use App\Repository\LinkRepository;
 use App\Entity\Link;
 use App\Form\LinkType;
 use App\Form\LinkEditType;
-
-
-
-
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 final class LinkController extends AbstractController
 {
@@ -239,6 +236,24 @@ final class LinkController extends AbstractController
             'link' => $link,
         ]);
     }
+
+    #[Route('/links/{id}/delete', name: 'link_delete', methods: ['POST'])]
+    public function deleteLink(Request $request, EntityManagerInterface $em, CsrfTokenManagerInterface $csrfTokenManager, int $id): Response
+    {
+        $link = $em->getRepository(Link::class)->find($id);
+        if (!$link) {
+            throw $this->createNotFoundException('Le lien demandé n\'existe pas');
+        }
+
+        if (!$this->isGranted('ROLE_SUPER_ADMIN')) {
+            throw new AccessDeniedHttpException('Seuls les super administrateurs peuvent supprimer des liens.');
+        }
+
+        if ($this->isCsrfTokenValid('delete-link-' . $link->getId(), $request->request->get('_token'))) {
+            $em->remove($link);
+            $em->flush();
+            $this->addFlash('success', 'Le lien a été supprimé avec succès.');
+        }
+        return $this->redirectToRoute('link_browse');
+    }
 }
-
-

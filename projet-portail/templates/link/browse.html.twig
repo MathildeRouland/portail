@@ -51,7 +51,10 @@
                         {% endif %}
                         <td>
                             <a href="{{ path('link_edit', {'id': link.id}) }}" class="btn btn-sm">Modifier</a>
-                            <a href="#" class="btn btn-sm btn-danger">Supprimer</a>
+                                <form method="post" action="{{ path('link_delete', {'id': link.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce lien ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-link-' ~ link.id) }}">
+                                    <button class="btn btn-sm btn-danger btn-action btn-normal" type="submit">Supprimer</button>
+                                </form>
                         </td>
                     </tr>
                 {% endfor %}
