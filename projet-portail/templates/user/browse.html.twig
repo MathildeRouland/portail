@@ -46,7 +46,10 @@
                                 <td data-label="Actions">
                                     <div class="action-btns">
                                         <a href="{{ path('user_edit', {'id': user.id}) }}" class="btn btn-sm btn-action">Modifier</a>
-                                        <a href="#" class="btn btn-sm btn-danger btn-action">Supprimer</a>
+                                        <form method="post" action="{{ path('user_delete', {'id': user.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
+                                        <button class="btn btn-sm btn-danger btn-action btn-normal" type="submit">Supprimer</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

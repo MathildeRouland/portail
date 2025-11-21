@@ -183,4 +183,26 @@ public function updateUser(Request $request, EntityManagerInterface $em, Securit
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/users/{id}/delete', name: 'user_delete', methods: ['POST'])]
+    public function deleteUser(Request $request, EntityManagerInterface $em, int $id): Response
+    {
+        $userToDelete = $em->getRepository(User::class)->find($id);
+        if (!$userToDelete) {
+            throw $this->createNotFoundException('Utilisateur non trouvé.');
+        }
+
+        if (!$this->isGranted('ROLE_SUPER_ADMIN')) {
+            throw new AccessDeniedHttpException('Seuls les super administrateurs peuvent supprimer des utilisateurs.');
+        }
+
+        if ($this->isCsrfTokenValid('delete-user-' . $userToDelete->getId(), $request->request->get('_token'))) {
+            $em->remove($userToDelete);
+            $em->flush();
+
+            $this->addFlash('success', 'Utilisateur "' . $userToDelete->getUsername() . '" supprimé avec succès.');
+        }
+
+        return $this->redirectToRoute('user_browse');
+    }
 }
