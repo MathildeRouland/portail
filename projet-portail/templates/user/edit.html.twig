@@ -20,6 +20,11 @@
         {{ form_widget(form.email) }}
         {{ form_errors(form.email, {'attr': {'class': 'form-error'}}) }}
     </div>
+
+    <div class="form-group">
+        {{ form_label(form.password) }}
+        {{ form_widget(form.password) }}
+        {{ form_errors(form.password, {'attr': {'class': 'form-error'}}) }}
     
     <div class="form-group">
         {{ form_label(form.roles) }}

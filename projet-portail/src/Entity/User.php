@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -18,26 +19,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+     #[Assert\NotBlank]
+     #[Assert\Email]
+     #[Assert\Length(max: 180)]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
+    #[Assert\All([
+        new Assert\Regex(pattern: '/^ROLE_[A-Z_]+$/', groups: ['create'])
+    ])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
+    #[Assert\Length(min: 8, groups: ['create'])]
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9_\- ]+$/u',
+        message: 'Le nom d’utilisateur ne peut contenir que des lettres, chiffres, espaces, tirets et underscores.'
+    )]
+    #[Assert\Length(min: 3, max: 50)]
     #[ORM\Column(length: 255)]
     private ?string $username = null;
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Link::class, orphanRemoval: true)]
     private Collection $links;
+
 
     public function __construct()
     {
@@ -124,7 +139,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        //$this->plainPassword = null;
     }
 
     public function getUsername(): ?string
@@ -138,4 +153,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 }

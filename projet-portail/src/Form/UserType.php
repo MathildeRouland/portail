@@ -47,6 +47,7 @@ class UserType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'current_user' => null, 
+           // 'validation_groups' => ['create'], 
         ]);
     }
 }
