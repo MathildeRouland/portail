@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\LinkRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: LinkRepository::class)]
@@ -16,24 +17,48 @@ class Link
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(groups: ['create'])]
+    #[Assert\Length(max: 255)]
+    #[Assert\Url]
     #[ORM\Column(length: 255)]
     private ?string $url = null;
 
+    #[Assert\NotBlank(groups: ['create'])]
+    #[Assert\Length(min: 2, max: 255)]
+    #[Assert\Regex(
+        pattern: "/^[A-Za-zÀ-ÖØ-öø-ÿ0-9\-\_ ]+$/u",
+        message: "Le nom ne peut contenir que des lettres, chiffres, espaces, tirets ou underscores."
+    )]
     #[ORM\Column(length: 255)]
     private ?string $customerName = null;
 
+    #[Assert\NotBlank(groups: ['create'])]
+    #[Assert\Length(min: 8, max: 12)]
+    #[Assert\Regex(
+        pattern: "/^[A-Z0-9]+$/",
+        message: "Les caractères aléatoires doivent être en majuscules et chiffres."
+    )]
     #[ORM\Column(length: 8)]
     private ?string $fourRandomCharacters = null;
 
+    #[Assert\Type(\DateTimeInterface::class)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $startDate = null;
 
+    #[Assert\Type(\DateTimeInterface::class)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $endDate = null;
 
+    #[Assert\Regex(
+        pattern: "/^\+[1-9]\d{7,14}$/",
+       groups: ['create', 'edit'],
+        message: "Le numéro de téléphone doit être au format international E.164 (ex : +33123456789)."
+    )]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerPhoneNumber = null;
 
+    #[Assert\Email(message: "L'adresse email n'est pas valide.")]
+    #[Assert\NotBlank(groups: ['create'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerEmail = null;
 

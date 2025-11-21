@@ -59,6 +59,7 @@ class LinkEditType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Link::class,
             'current_user' => null,
+            'validation_groups' => ['Default', 'edit'],
         ]);
     }
 }

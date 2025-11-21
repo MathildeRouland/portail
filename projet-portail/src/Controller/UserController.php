@@ -15,8 +15,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
-
-
+use App\Form\PasswordChangeFormType;
+use App\Form\UserType;
+use Symfony\Component\Form\FormError;
 
 final class UserController extends AbstractController
 {
@@ -61,9 +62,10 @@ public function createUser(
     }
     
     $user = new User();
-    $form = $this->createForm(\App\Form\UserType::class, $user, [
-        'current_user' => $this->getUser(),
-    ]);
+    $form = $this->createForm(UserType::class, $user, [
+    'current_user' => $this->getUser(),
+    'validation_groups' => ['create'],   
+]);
     
     $form->handleRequest($request);
     
@@ -96,7 +98,7 @@ public function createUser(
 }
 
 #[Route('/users/{id}/edit', name: 'user_edit')]
-public function updateUser(Request $request, EntityManagerInterface $em, Security $security, int $id): Response
+public function updateUser(Request $request, EntityManagerInterface $em, Security $security,  UserPasswordHasherInterface $passwordHasher, int $id): Response
 {
     // Récupérer l'utilisateur à modifier
     $userToUpdate = $em->getRepository(User::class)->find($id);
@@ -116,11 +118,11 @@ public function updateUser(Request $request, EntityManagerInterface $em, Securit
 
     if ($form->isSubmitted() && $form->isValid()) {
         // Hash du mot de passe si un nouveau mot de passe est fourni
-        //$plainPassword = $form->get('password')->getData();
-        //if ($plainPassword) {
-          //  $hashedPassword = $passwordHasher->hashPassword($userToUpdate, $plainPassword);
-            //$userToUpdate->setPassword($hashedPassword);
-        //}
+        $plainPassword = $form->get('password')->getData();
+        if ($plainPassword) {
+        $hashedPassword = $passwordHasher->hashPassword($userToUpdate, $plainPassword);
+        $userToUpdate->setPassword($hashedPassword);
+        }
 
         // Récupérer le rôle sélectionné
         $role = $form->get('roles')->getData();
@@ -137,4 +139,48 @@ public function updateUser(Request $request, EntityManagerInterface $em, Securit
         'user' => $userToUpdate,
     ]);
 }
+    #[Route('/password/change', name: 'user_change_password')]
+    public function changePassword(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $form = $this->createForm(PasswordChangeFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // Vérification du mot de passe actuel
+            if (!$passwordHasher->isPasswordValid($user, $form->get('currentPassword')->getData())) {
+                $form->get('currentPassword')->addError(
+                    new FormError('Mot de passe actuel incorrect.')
+                );
+            } else {
+
+                // Mise à jour du mot de passe
+                $newHashedPassword = $passwordHasher->hashPassword(
+                    $user,
+                    $form->get('newPassword')->getData()
+                );
+
+                $user->setPassword($newHashedPassword);
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Mot de passe mis à jour avec succès.');
+
+                return $this->redirectToRoute('homepage');
+            }
+        }
+
+        return $this->render('user/change_password.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 }

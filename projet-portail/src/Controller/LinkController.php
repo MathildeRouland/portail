@@ -66,12 +66,13 @@ final class LinkController extends AbstractController
         
         $form = $this->createForm(LinkType::class, $link, [
             'current_user' => $this->getUser(),
+            'validation_groups' => ['Default', 'create'],
         ]);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Générer les 4 caractères aléatoires
-            $code = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 5)), 0, 4);
+            // Générer les 8 caractères aléatoires
+            $code = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 5)), 0, 8);
             $link->setFourRandomCharacters($code);
             
             // Créer l'URL
@@ -129,13 +130,26 @@ final class LinkController extends AbstractController
         if ($link->isPermanent()) {
             // Lien permanent, toujours valide
             $status = true;
-        } else {
-            $start = $link->getStartDate()->setTimezone(new \DateTimeZone('Europe/Paris'));
-            $end = $link->getEndDate()->setTimezone(new \DateTimeZone('Europe/Paris'));
-            if ($link->isStatus() || $start < $now || $end > $now) {
-                $status = true; // tentative valide
+       } else {
+           $tz = new \DateTimeZone('Europe/Paris');
+
+        $start = $link->getStartDate();
+        $end = $link->getEndDate();
+
+        $status = false;
+
+        if ($start !== null && $end !== null) {
+            // Ici PHP sait que $start et $end sont des objets DateTime
+            /** @var \DateTime $start */
+            /** @var \DateTime $end */
+            $start->setTimezone($tz);
+            $end->setTimezone($tz);
+
+            if ($link->isStatus() && $start < $now && $end > $now) {
+                $status = true;
             }
-        }        
+        }
+    }
         // Enregistrer l'ouverture dans l'historique
         $history = new \App\Entity\OpeningHistory();
         $history->setStatus($status);
@@ -169,6 +183,7 @@ final class LinkController extends AbstractController
             return $this->render('link/expired.html.twig');
         }
     }
+
     
     #[Route('/links/{id}/edit', name: 'link_edit')]
     public function updateLink(Request $request, EntityManagerInterface $em, Security $security, int $id): Response

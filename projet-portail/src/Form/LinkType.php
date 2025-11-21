@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class LinkType extends AbstractType
 {
@@ -42,10 +43,17 @@ class LinkType extends AbstractType
             ->add('customerPhoneNumber', TextType::class, [
                 'label' => 'Numéro de téléphone',
                 'required' => false,
+                'constraints' => [
+                    new Regex([
+                        'pattern' => "/^\+[1-9]\d{7,14}$/",
+                        'message' => "Format international requis (ex : +33123456789).",
+                        'groups' => ['create', 'edit'],
+                    ])
+                ],
             ])
             ->add('customerEmail', EmailType::class, [
                 'label' => 'Email du client',
-                'required' => false,
+                'required' => true,
             ])
             ->add('status', CheckboxType::class, [
                 'label' => 'Actif',
@@ -61,6 +69,7 @@ class LinkType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Link::class,
             'current_user' => null, 
+            'validation_groups' => ['Default', 'create'],
         ]);
     }
 }
