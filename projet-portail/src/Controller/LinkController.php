@@ -15,6 +15,10 @@ use App\Entity\Link;
 use App\Form\LinkType;
 use App\Form\LinkEditType;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
+
 
 final class LinkController extends AbstractController
 {
@@ -66,12 +70,17 @@ final class LinkController extends AbstractController
             'validation_groups' => ['Default', 'create'],
         ]);
         $form->handleRequest($request);
-        
+        //dump($form->getData(), $form->getErrors(true)); die;
         if ($form->isSubmitted() && $form->isValid()) {
             // Générer les 8 caractères aléatoires
             $code = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 5)), 0, 8);
-            $link->setFourRandomCharacters($code);
+            $link->setEightRandomCharacters($code);
             
+            // Générer le mot de passe client
+            $customerPassword = bin2hex(random_bytes(4)); // 8 caractères
+            $hashedPassword = password_hash($customerPassword, PASSWORD_DEFAULT);
+            $link->setCustomerPassword($hashedPassword);
+
             // Créer l'URL
             $baseUrl = $request->getSchemeAndHttpHost(); // Ex: http://localhost
             $url = $baseUrl . "/open/" . urlencode($link->getCustomerName()) . '-' . $code;
@@ -92,6 +101,7 @@ final class LinkController extends AbstractController
             
             return $this->render('link/success.html.twig', [
                 'generated_url' => $url,
+                'customer_password' => $customerPassword,
             ]);
         }
         
@@ -99,16 +109,10 @@ final class LinkController extends AbstractController
         return $this->render('link/create.html.twig', [
             'form' => $form->createView(),
             'generated_link' => $link->getUrl(), // Affichage du lien généré dans la vue
+            'customer_password' => $link->getCustomerPassword(),
         ]);
     }
     
-    //   // Fonction pour générer un lien basé sur le nom du client et 4 caractères aléatoires
-    //   protected function generateLinkUrl(Link $link): string
-    //   {
-    //       // Générer un lien unique basé sur le nom du client et 4 caractères aléatoires
-    //       $randomChars = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4);
-    //       return $link->getCustomerName() . '-' . $randomChars; // Exemple de génération de lien
-    //   }
     
     #[Route('/open/{fullUrl}', name: 'link_open', methods: ['GET'])]
     public function showOpenPage(string $fullUrl, Request $request, EntityManagerInterface $em): Response
@@ -132,7 +136,8 @@ final class LinkController extends AbstractController
     public function openLinkValidate(
         string $fullUrl, 
         Request $request, 
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $passwordHasher
     ): Response {
         // Recréer l'URL complète attendue
         $currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
@@ -143,32 +148,37 @@ final class LinkController extends AbstractController
         if (!$link) {
             return $this->redirectToRoute('homepage'); // lien inexistant
         }
-         // -- Future validation du mot de passe du lien --
-        $submittedPassword = $request->request->get('password');
-        // TODO: comparer ici
-        
+
         $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
-            $status = false; // statut invalide
-        if ($link->isPermanent()) {
-            // Lien permanent, toujours valide
-            $status = true;
-       } else {
-           $tz = new \DateTimeZone('Europe/Paris');
 
-        $start = $link->getStartDate();
-        $end = $link->getEndDate();
+        // Vérification du mot de passe
+        $submittedPassword = $request->request->get('password');
+        $hashedPassword = $link->getCustomerPassword(); // ou getCustomerPassword() si tu as changé
 
-        $status = false;
-
-        if ($start !== null && $end !== null) {
-            // Ici PHP sait que $start et $end sont des objets DateTime
-            /** @var \DateTime $start */
-            /** @var \DateTime $end */
-            $start->setTimezone($tz);
-            $end->setTimezone($tz);
-
-            if ($link->isStatus() && $start < $now && $end > $now) {
+        if (!password_verify($submittedPassword, $hashedPassword)) {
+            $this->addFlash('error', 'Le mot de passe saisi est incorrect.');
+            return $this->render('link/confirm_open.html.twig', [
+                'link' => $link,
+            ]);
+        } else {
+            $status = false;
+            if ($link->isPermanent()) {
                 $status = true;
+            } else {
+            $start = $link->getStartDate();
+            $end = $link->getEndDate();
+            $tz = new \DateTimeZone('Europe/Paris');
+
+            if ($start !== null && $end !== null) {
+                // Ici PHP sait que $start et $end sont des objets DateTime
+                /** @var \DateTime $start */
+                /** @var \DateTime $end */
+                $start->setTimezone($tz);
+                $end->setTimezone($tz);
+
+                if ($start <= $now && $end >= $now) {
+                    $status = true;
+                }
             }
         }
     }

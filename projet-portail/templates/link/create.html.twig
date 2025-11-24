@@ -38,10 +38,14 @@
 </div>
 
 {# Les champs creator/updater/createdAt sont gérés automatiquement, ne pas les rendre dans le formulaire de création #}
-    {# Afficher le lien généré avant l'envoi #}
+    {# Afficher le lien et le mot de passe générés avant l'envoi #}
     <div>
         <strong>Lien généré : </strong>
         <span>{{ generated_link }}</span>
+    </div>
+    <div>
+        <strong>Mot de passe client généré : </strong>
+        <span>{{ customer_password }}</span>
     </div>
 
     <div class="form-actions">

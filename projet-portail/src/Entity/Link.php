@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
+
 #[ORM\Entity(repositoryClass: LinkRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Link
@@ -17,7 +18,6 @@ class Link
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank(groups: ['create'])]
     #[Assert\Length(max: 255)]
     #[Assert\Url]
     #[ORM\Column(length: 255)]
@@ -32,14 +32,13 @@ class Link
     #[ORM\Column(length: 255)]
     private ?string $customerName = null;
 
-    #[Assert\NotBlank(groups: ['create'])]
     #[Assert\Length(min: 8, max: 12)]
     #[Assert\Regex(
         pattern: "/^[A-Z0-9]+$/",
         message: "Les caractères aléatoires doivent être en majuscules et chiffres."
     )]
     #[ORM\Column(length: 8)]
-    private ?string $fourRandomCharacters = null;
+    private ?string $eightRandomCharacters = null;
 
     #[Assert\Type(\DateTimeInterface::class)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -61,6 +60,9 @@ class Link
     #[Assert\NotBlank(groups: ['create'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerEmail = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $customerPassword = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
@@ -111,14 +113,14 @@ class Link
         return $this;
     }
 
-    public function getFourRandomCharacters(): ?string
+    public function getEightRandomCharacters(): ?string
     {
-        return $this->fourRandomCharacters;
+        return $this->eightRandomCharacters;
     }
 
-    public function setFourRandomCharacters(string $fourRandomCharacters): static
+    public function setEightRandomCharacters(string $eightRandomCharacters): static
     {
-        $this->fourRandomCharacters = $fourRandomCharacters;
+        $this->eightRandomCharacters = $eightRandomCharacters;
 
         return $this;
     }
@@ -168,6 +170,17 @@ class Link
     {
         $this->customerEmail = $customerEmail;
 
+        return $this;
+    }
+
+    public function getCustomerPassword(): ?string
+    {
+        return $this->customerPassword;
+    }
+
+    public function setCustomerPassword(?string $customerPassword): static
+    {
+        $this->customerPassword = $customerPassword;
         return $this;
     }
 
