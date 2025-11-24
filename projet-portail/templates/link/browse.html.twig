@@ -17,13 +17,17 @@
         <table>
             <thead>
                 <tr>
-                    <th>Client</th>
+                    <th>Identifiant</th>                    
                     <th>URL</th>
+                    <th>Client</th>
                     <th>Date de début</th>
                     <th>Date de fin</th>
                     <th>Statut</th>
                     {% if is_granted('ROLE_SUPER_ADMIN') %}
                         <th>Créateur</th>
+                        <th>Date de création</th>
+                        <th>Modifié par</th>
+                        <th>Date de modification</th>
                     {% endif %}
                     <th>Actions</th>
                 </tr>
@@ -31,12 +35,13 @@
             <tbody>
                 {% for link in links %}
                     <tr>
-                        <td>{{ link.customerName }}</td>
+                        <td>{{ link.id }}</td>
                         <td>
                             <a href="{{ link.url }}" target="_blank">
                                 {{ link.url }}
                             </a>
                         </td>
+                        <td>{{ link.customerName }}</td>
                         <td>{{ link.startDate ? link.startDate|date('d/m/Y H:i') : 'Non défini' }}</td>
                         <td>{{ link.endDate ? link.endDate|date('d/m/Y H:i') : 'Non défini' }}</td>
                         <td>
@@ -48,6 +53,9 @@
                         </td>
                         {% if is_granted('ROLE_SUPER_ADMIN') %}
                             <td>{{ link.creator.username }}</td>
+                            <td>{{ link.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ link.updater.username }}</td>
+                            <td>{{ link.updatedAt|date('d/m/Y H:i') }}</td>
                         {% endif %}
                         <td>
                             <a href="{{ path('link_edit', {'id': link.id}) }}" class="btn btn-sm">Modifier</a>
