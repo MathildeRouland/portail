@@ -1,0 +1,19 @@
+
+{% extends 'base.html.twig' %}
+{% block title %}lien valide{% endblock %}
+
+{% block body %}
+<h2>Ouverture du portail</h2>
+
+<p>Nom du client : <strong>{{ link.customerName }}</strong></p>
+
+<form action="{{ path('link_open_validate', { fullUrl: fullUrl }) }}" method="post">
+    
+    {# Champ futur : mot de passe du lien #}
+    <label for="password">Mot de passe du lien :</label>
+    <input type="password" name="password" id="password">
+
+    <button type="submit">Ouvrir le portail</button>
+</form>
+
+{% endblock %}

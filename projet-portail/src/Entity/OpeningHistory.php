@@ -32,7 +32,7 @@ class OpeningHistory
     private ?string $customerName = null;
 
     #[ORM\Column(length: 45, nullable: true)]
-    private ?string $IpAdress = null;
+    private ?string $IpAddress = null;
 
     public function getId(): ?int
     {
@@ -98,14 +98,14 @@ class OpeningHistory
         return $this;
     }
 
-    public function getIpAdress(): ?string
+    public function getIpAddress(): ?string
     {
-        return $this->IpAdress;
+        return $this->IpAddress;
     }
 
-    public function setIpAdress(?string $IpAdress): static
+    public function setIpAddress(?string $IpAddress): static
     {
-        $this->IpAdress = $IpAdress;
+        $this->IpAddress = $IpAddress;
 
         return $this;
     }

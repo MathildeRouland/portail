@@ -17,8 +17,9 @@
         <table>
             <thead>
                 <tr>
-                    <th>Client</th>
+                    <th>Identifiant</th>                    
                     <th>URL</th>
+                    <th>Client</th>
                     <th>Date de début</th>
                     <th>Date de fin</th>
                     <th>Statut</th>
@@ -34,12 +35,13 @@
             <tbody>
                 {% for link in links %}
                     <tr>
-                        <td>{{ link.customerName }}</td>
+                        <td>{{ link.id }}</td>
                         <td>
                             <a href="{{ link.url }}" target="_blank">
                                 {{ link.url }}
                             </a>
                         </td>
+                        <td>{{ link.customerName }}</td>
                         <td>{{ link.startDate ? link.startDate|date('d/m/Y H:i') : 'Non défini' }}</td>
                         <td>{{ link.endDate ? link.endDate|date('d/m/Y H:i') : 'Non défini' }}</td>
                         <td>

@@ -110,9 +110,30 @@ final class LinkController extends AbstractController
     //       return $link->getCustomerName() . '-' . $randomChars; // Exemple de génération de lien
     //   }
     
-    #[Route('/open/{fullUrl}', name: 'link_open')]
-    public function openLink(string $fullUrl, Request $request, EntityManagerInterface $em): Response
+    #[Route('/open/{fullUrl}', name: 'link_open', methods: ['GET'])]
+    public function showOpenPage(string $fullUrl, Request $request, EntityManagerInterface $em): Response
     {
+        $currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
+
+        $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+
+        if (!$link) {
+            return $this->redirectToRoute('homepage');
+        }
+
+        return $this->render('link/confirm_open.html.twig', [
+            'link' => $link,
+            'fullUrl' => $fullUrl,
+        ]);
+    }
+
+
+    #[Route('/open/{fullUrl}/validate', name: 'link_open_validate', methods: ['POST'])]
+    public function openLinkValidate(
+        string $fullUrl, 
+        Request $request, 
+        EntityManagerInterface $em
+    ): Response {
         // Recréer l'URL complète attendue
         $currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
         
@@ -122,6 +143,10 @@ final class LinkController extends AbstractController
         if (!$link) {
             return $this->redirectToRoute('homepage'); // lien inexistant
         }
+         // -- Future validation du mot de passe du lien --
+        $submittedPassword = $request->request->get('password');
+        // TODO: comparer ici
+        
         $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
             $status = false; // statut invalide
         if ($link->isPermanent()) {
@@ -158,7 +183,7 @@ final class LinkController extends AbstractController
         // Récupérer l'IP du client (stocker en clair pour conserver la forme d'origine)
         $clientIp = $request->getClientIp();
         if ($clientIp !== null) {
-            $history->setIpAdress($clientIp);
+            $history->setIpAddress($clientIp);
         }
         
         $em->persist($history);

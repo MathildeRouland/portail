@@ -359,3 +359,13 @@
 @media (max-width: 600px) {
   .action-btns { flex-direction: column; }
 }
+
+.green {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.red {
+    color: #dc3545;
+    font-weight: bold;
+}
