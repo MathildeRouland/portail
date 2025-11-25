@@ -77,9 +77,9 @@ final class LinkController extends AbstractController
             $link->setEightRandomCharacters($code);
             
             // Générer le mot de passe client
-            $customerPassword = bin2hex(random_bytes(4)); // 8 caractères
-            $hashedPassword = password_hash($customerPassword, PASSWORD_DEFAULT);
-            $link->setCustomerPassword($hashedPassword);
+           // $customerPassword = bin2hex(random_bytes(4)); // 8 caractères
+            //$hashedPassword = password_hash($customerPassword, PASSWORD_DEFAULT);
+            //$link->setCustomerPassword($hashedPassword);
 
             // Créer l'URL
             $baseUrl = $request->getSchemeAndHttpHost(); // Ex: http://localhost
@@ -101,7 +101,7 @@ final class LinkController extends AbstractController
             
             return $this->render('link/success.html.twig', [
                 'generated_url' => $url,
-                'customer_password' => $customerPassword,
+                //'customer_password' => $customerPassword,
             ]);
         }
         
@@ -109,7 +109,7 @@ final class LinkController extends AbstractController
         return $this->render('link/create.html.twig', [
             'form' => $form->createView(),
             'generated_link' => $link->getUrl(), // Affichage du lien généré dans la vue
-            'customer_password' => $link->getCustomerPassword(),
+            //'customer_password' => $link->getCustomerPassword(),
         ]);
     }
     
@@ -152,15 +152,15 @@ final class LinkController extends AbstractController
         $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
 
         // Vérification du mot de passe
-        $submittedPassword = $request->request->get('password');
-        $hashedPassword = $link->getCustomerPassword(); // ou getCustomerPassword() si tu as changé
+        //$submittedPassword = $request->request->get('password');
+       // $hashedPassword = $link->getCustomerPassword(); // ou getCustomerPassword() si tu as changé
 
-        if (!password_verify($submittedPassword, $hashedPassword)) {
-            $this->addFlash('error', 'Le mot de passe saisi est incorrect.');
-            return $this->render('link/confirm_open.html.twig', [
-                'link' => $link,
-            ]);
-        } else {
+       // if (!password_verify($submittedPassword, $hashedPassword)) {
+           // $this->addFlash('error', 'Le mot de passe saisi est incorrect.');
+            //return $this->render('link/confirm_open.html.twig', [
+             //   'link' => $link,
+            //]);
+        //} else {
             $status = false;
             if ($link->isPermanent()) {
                 $status = true;
@@ -180,7 +180,7 @@ final class LinkController extends AbstractController
                     $status = true;
                 }
             }
-        }
+        //}
     }
         // Enregistrer l'ouverture dans l'historique
         $history = new \App\Entity\OpeningHistory();

@@ -61,8 +61,8 @@ class Link
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerEmail = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $customerPassword = null;
+    //#[ORM\Column(length: 255, nullable: true)]
+    //private ?string $customerPassword = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
@@ -173,16 +173,16 @@ class Link
         return $this;
     }
 
-    public function getCustomerPassword(): ?string
-    {
-        return $this->customerPassword;
-    }
+    //public function getCustomerPassword(): ?string
+    //{
+      //  return $this->customerPassword;
+    //}
 
-    public function setCustomerPassword(?string $customerPassword): static
-    {
-        $this->customerPassword = $customerPassword;
-        return $this;
-    }
+    //public function setCustomerPassword(?string $customerPassword): static
+    //{
+      //  $this->customerPassword = $customerPassword;
+        //return $this;
+    //}
 
     public function getCreatedAt(): ?\DateTimeInterface
     {
