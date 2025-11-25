@@ -70,7 +70,7 @@ final class LinkController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Générer les 8 caractères aléatoires
             $code = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 5)), 0, 8);
-            $link->setFourRandomCharacters($code);
+            $link->setEightRandomCharacters($code);
             
             // Créer l'URL
             $baseUrl = $request->getSchemeAndHttpHost(); // Ex: http://localhost
