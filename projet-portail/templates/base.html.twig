@@ -8,19 +8,30 @@
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('asset/css/style.css') }}">
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <script src="{{ asset('asset/js/generateLink.js') }}"></script>
     {% endblock %}
 </head>
 <body>
 
 <header>
-    <h1>Portail de l’Orangerie</h1>
+    <h1><a class="h1" href="{{ path('homepage') }}">Portail de l’Orangerie</a></h1>
     <nav>
     {% if is_granted('ROLE_SUPER_ADMIN') %}
         <a href="{{ path('link_create') }}">Créer un lien</a>
         <a href="{{ path('link_browse') }}">Gérer mes liens</a>
         <a href="{{ path('user_browse') }}">Gérer les utilisateurs</a>
         <a href="{{ path('opening_history_browse') }}">Voir l'historique</a>
+        <li class="nav-item settings-dropdown">
+            <a class="nav-link" href="{{ path('superadmin_settings_menu') }}">
+                <i class="fa fa-cog" aria-hidden="true"></i> Paramètres
+            </a>
+            <ul class="settings-submenu">
+                <li><a href="{{ path('superadmin_settings_appearance') }}">Apparence</a></li>
+                <li><a href="{{ path('superadmin_settings_content') }}">Contenu portail</a></li>
+                <li><a href="{{ path('superadmin_settings_system') }}">Système</a></li>
+            </ul>
+        </li>
         {% if app.user %}
                {{ app.user.userIdentifier }}
         {% endif %}
@@ -48,8 +59,9 @@
     © {{ "now"|date("Y") }} L’Orangerie de Thoiry — Tous droits réservés
 </footer>
 
-</body>
 {% block javascripts %}
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
     <script src="{{ asset('asset/js/link-permanent.js') }}"></script>
 {% endblock %}
+</body>
 </html>

@@ -6,10 +6,15 @@
     --white: #ffffff;
     --transition: 0.3s ease;
   }
+
+html {
+    font-size: clamp(16px, 1.8vw, 19px);
+}
   
   body {
     margin: 0;
     font-family: "Cormorant Garamond", serif;
+    font-size: 1rem;
     background-color: var(--light-bg);
     color: var(--main-bg-color);
     line-height: 1.6;
@@ -28,12 +33,16 @@
   
   header h1, header .logo {
     font-family: "Playfair Display", serif;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     letter-spacing: 1px;
     color: var(--main-text-color);
     text-transform: uppercase;
     margin: 0;
   }
+  a.h1 {
+    text-decoration: none; 
+      color: inherit;
+    }
   
   nav a {
     color: var(--white);
@@ -51,7 +60,7 @@
   /* ===== MAIN CONTENT ===== */
   main {
     padding: 2rem;
-    max-width: 1200px;
+    max-width:100%;
     margin: auto;
     background-color: var(--white);
     border-radius: 8px;
@@ -59,20 +68,20 @@
   }
   
   /* ===== BUTTONS ===== */
-  button,
+button,
   .btn {
     background-color: var(--main-bg-color);
     color: var(--main-text-color);
     border: 1px solid var(--main-text-color);
     padding: 0.6rem 1.2rem;
     text-transform: uppercase;
-    border-radius: 30px;
+    border-radius: 3px;
     cursor: pointer;
     transition: background-color var(--transition), color var(--transition);
     font-weight: 600;
   }
 
-  .btn-normal {
+  /* .btn-normal {
     font-weight: normal;
   }
   
@@ -80,67 +89,83 @@
   .btn:hover {
     background-color: var(--main-text-color);
     color: var(--main-bg-color);
-  }
-  
-  /* ===== TABLES ===== */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1.5rem;
-  }
-  
-  table th, table td {
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-  }
-  
-  table th {
+  } */ 
+   /* Conteneur des boutons */
+.action-btns {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;      /* permet aux boutons de passer à la ligne si nécessaire */
+    justify-content: flex-start; /* ou center si tu veux centrer les boutons */
+}
+
+.action-btn {
+    flex: 1 1 120px;      /* flex-grow:1, flex-shrink:1, base:120px */
+    max-width: 200px;     /* ne pas trop grossir sur grand écran */
+    height: 36px;         
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    font-weight: 600;
+    border-radius: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Variantes de couleur */
+.btn-primary {
     background-color: var(--main-bg-color);
     color: var(--main-text-color);
-    text-align: left;
-  }
-  
-  table tr:nth-child(even) {
-    background-color: #f3f3f3;
-  }
+    border: 1px solid var(--main-text-color);
+}
 
-/* Mobile: table to cards */
-@media (max-width: 600px) {
-  table thead {
-    display: none;
-  }
-
-  table, table tbody, table tr, table td {
-    display: block;
-    width: 100%;
-  }
-
-  table tr {
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    padding: 0.75rem;
-    border-radius: 6px;
-    background: #fff;
-  }
-
-  table td {
-    padding: 0.5rem 0;
-    border: none;
-    position: relative;
-  }
-
-  table td::before {
-    content: attr(data-label);
-    font-weight: 700;
-    display: block;
+.btn-primary:hover {
+    background-color: var(--main-text-color);
     color: var(--main-bg-color);
-    margin-bottom: 0.25rem;
-  }
+}
 
-  .user-links {
-    padding-left: 1rem;
-    margin: 0;
-  }
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: 1px solid #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+  
+ /* ===== TABLE STYLES ===== */
+.table-container {
+  max-width: 100%;   
+  margin: 0 auto;     
+  padding: 1rem;
+}
+
+.responsive-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+.responsive-table th,
+.responsive-table td {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+}
+
+.responsive-table th {
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
+  text-align: left;
+  position: sticky;
+  top: 0;        
+}
+
+.responsive-table tr:nth-child(even) {
+  background-color: #f3f3f3;
 }
   
 /* ===== FORMS ===== */
@@ -225,7 +250,6 @@
 .btn-sm {
     padding: 0.3rem 0.6rem;
     font-size: 0.9rem;
-    border-radius: 3px;
     display: inline-block;
     text-decoration: none;
     margin-right: 0.3rem;
@@ -240,6 +264,21 @@
 .btn-danger:hover {
     background-color: #c82333;
     border-color: #bd2130;
+}
+
+/* Desktop & tablette large */
+.action-btns {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btns .btn-action {
+    min-width: 110px;       /* largeur minimale identique */
+    height: 30px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Griser un champ désactivé */
@@ -282,16 +321,256 @@
 }
 
 .action-btns {
-  display: flex;
-  gap: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap; /* Permet aux boutons de passer à la ligne si nécessaire */
 }
 
 .btn-action {
-  flex: 1 1 0; /* make buttons grow equally */
-  text-align: center;
+    flex: 0 0 auto; /* Ne pas forcer la largeur */
+    text-align: center;
+    min-width: 110px;
+    height: 30px; 
+}
+
+
+.green {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.red {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Menu Settings superadmin */
+.settings-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.settings-submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    min-width: 180px;
+    z-index: 10;
+}
+
+.settings-submenu li {
+    padding: 10px;
+}
+
+.settings-submenu li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+}
+
+.settings-dropdown:hover .settings-submenu {
+    display: block;
+}
+
+/* Petit effet au survol */
+.settings-submenu li:hover {
+    background-color: #f0f0f0;
+}
+
+/* Style pour les cartes de setting_design */
+.settings-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.settings-card {
+    flex: 1 1 250px;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.settings-card h2 {
+    margin-bottom: 10px;
+}
+
+.settings-card p {
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.settings-card .btn {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #363340;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.settings-card .btn:hover {
+    background-color: #0056b3;
 }
 
 /* ===== RESPONSIVE LAYOUT ===== */
+
+/* ===== MOBILE: TABLE TO CARDS ===== */
+
+
+@media (min-width: 600px) and (max-width: 1500px) {
+
+
+.action-btns {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;      /* permet aux boutons de passer à la ligne si nécessaire */
+    justify-content: flex-start; /* ou center si tu veux centrer les boutons */
+}
+
+.action-btn {
+    flex: 1 1 120px;      /* flex-grow:1, flex-shrink:1, base:120px */
+    max-width: 200px;     /* ne pas trop grossir sur grand écran */
+    height: 36px;         
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    font-weight: 600;
+    border-radius: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+/* .action-btns .btn-action {
+    min-width: 110px; 
+    height: 30px;    
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+} */
+  .responsive-table thead {
+    display: none; /* Masque l'en-tête sur mobile */
+  }
+
+  .responsive-table,
+  .responsive-table tbody,
+  .responsive-table tr,
+  .responsive-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .responsive-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    padding: 0.75rem 1rem;
+  }
+
+  .responsive-table td {
+    border: none;
+    padding: 0.5rem 0;
+    position: relative;
+  }
+
+  .responsive-table td::before {
+    content: attr(data-label); /* Affiche le label de la colonne */
+    font-weight: 700;
+    display: block;
+    color: var(--main-bg-color);
+    margin-bottom: 0.25rem;
+  }
+
+  /* Optionnel : pour les liens ou boutons dans les cards */
+  .responsive-table td a,
+  .responsive-table td button {
+    display: inline-block;
+    margin-top: 0.3rem;
+  }
+}
+/* ===== MOBILE: TABLE TO CARDS ===== */
+@media (max-width: 600px) {
+
+  body {
+    font-size: 1.05rem;
+  }
+
+  nav a {
+    font-size: 1.1rem;
+    display: block;
+    margin: 0.25rem 0;
+  }
+
+   header h1 {
+    font-size: 1.2rem;
+  }
+
+ .action-btns {
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .btn-action {
+        flex: none;
+        width: 100%;
+    }
+
+  .responsive-table thead {
+    display: none; /* Masque l'en-tête sur mobile */
+  }
+
+  .responsive-table,
+  .responsive-table tbody,
+  .responsive-table tr,
+  .responsive-table td {
+    display: block;
+    width: 100%;
+    font-size: 1rem;
+    border: none;
+    padding: 0.5rem 0;
+    position: relative;
+  }
+
+  .responsive-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    padding: 0.75rem 1rem;
+  }
+
+  .responsive-table td::before {
+    content: attr(data-label); /* Affiche le label de la colonne */
+    font-weight: 700;
+    display: block;
+    color: var(--main-bg-color);
+    margin-bottom: 0.25rem;
+  }
+
+  /* Optionnel : pour les liens ou boutons dans les cards */
+  .responsive-table td a,
+  .responsive-table td button {
+    display: inline-block;
+    margin-top: 0.3rem;
+  }
+}
+
 @media (max-width: 900px) {
   header {
     flex-direction: column;
@@ -322,50 +601,4 @@
   .action-btns {
     gap: 0.4rem;
   }
-}
-
-@media (max-width: 600px) {
-  header h1 {
-    font-size: 1.2rem;
-  }
-
-  nav a {
-    display: block;
-    margin: 0.25rem 0;
-  }
-
-  /* Make buttons full width on small screens */
-  .action-btns {
-    flex-direction: column;
-  }
-
-  .btn-action {
-    width: 100%;
-  }
-
-  /* Table responsive container: allow horizontal scroll */
-  .table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  table {
-    display: block;
-    width: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  .action-btns { flex-direction: column; }
-}
-
-.green {
-    color: #28a745;
-    font-weight: bold;
-}
-
-.red {
-    color: #dc3545;
-    font-weight: bold;
-}
+} 

@@ -9,7 +9,8 @@
         <p>Aucun historique n'a été créé pour le moment.</p>
     {% else %}
         {% if is_granted('ROLE_SUPER_ADMIN') %}
-            <table>
+        <div class="table-container">
+            <table class="responsive-table">
                 <thead>
                     <tr>
                         <th>Statut</th>
@@ -40,6 +41,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
         {% endif %}
     {% endif %}
 {% endblock %}

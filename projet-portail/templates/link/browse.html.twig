@@ -14,7 +14,8 @@
     {% if links is empty %}
         <p>Aucun lien n'a été créé pour le moment.</p>
     {% else %}
-        <table>
+    <div class="table-container">
+        <table class="responsive-table">
             <thead>
                 <tr>
                     <th>Identifiant</th>                    
@@ -35,16 +36,16 @@
             <tbody>
                 {% for link in links %}
                     <tr>
-                        <td>{{ link.id }}</td>
+                        <td data-label="Identifiant :">{{ link.id }}</td>
                         <td>
                             <a href="{{ link.url }}" target="_blank">
                                 {{ link.url }}
                             </a>
                         </td>
-                        <td>{{ link.customerName }}</td>
-                        <td>{{ link.startDate ? link.startDate|date('d/m/Y H:i') : 'Non défini' }}</td>
-                        <td>{{ link.endDate ? link.endDate|date('d/m/Y H:i') : 'Non défini' }}</td>
-                        <td>
+                        <td data-label="Nom du client  :">{{ link.customerName }}</td>
+                        <td data-label="Date de début :">{{ link.startDate ? link.startDate|date('d/m/Y H:i') : 'Non défini' }}</td>
+                        <td data-label="Date de fin :">{{ link.endDate ? link.endDate|date('d/m/Y H:i') : 'Non défini' }}</td>
+                        <td data-label="Statut :">
                             {% if link.status %}
                                 <span class="status-active">Actif</span>
                             {% else %}
@@ -52,21 +53,28 @@
                             {% endif %}
                         </td>
                         {% if is_granted('ROLE_SUPER_ADMIN') %}
-                            <td>{{ link.creator.username }}</td>
-                            <td>{{ link.createdAt|date('d/m/Y H:i') }}</td>
-                            <td>{{ link.updater.username }}</td>
-                            <td>{{ link.updatedAt|date('d/m/Y H:i') }}</td>
+                            <td data-label="Créateur :">{{ link.creator.username }}</td>
+                            <td data-label="Créé le :">{{ link.createdAt|date('d/m/Y H:i') }}</td>
+                            <td data-label="Modifié par :">{{ link.updater.username }}</td>
+                            <td data-label="Modifié le :">{{ link.updatedAt|date('d/m/Y H:i') }}</td>
                         {% endif %}
                         <td>
-                            <a href="{{ path('link_edit', {'id': link.id}) }}" class="btn btn-sm">Modifier</a>
-                                <form method="post" action="{{ path('link_delete', {'id': link.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce lien ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-link-' ~ link.id) }}">
-                                    <button class="btn btn-sm btn-danger btn-action btn-normal" type="submit">Supprimer</button>
+                        <div class="action-btns">        
+                                <form method="post" action="{{ path('link_edit', {'id': link.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('update-link-' ~ link.id) }}">
+                                    <button type="submit" class="btn-action btn-primary">Modifier</button>
                                 </form>
+
+                                <form method="post" action="{{ path('link_delete', {'id': link.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer ce lien ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-link-' ~ link.id) }}">
+                                    <button type="submit" class="btn-action btn-danger">Supprimer</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
     {% endif %}
 {% endblock %}

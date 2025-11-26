@@ -102,13 +102,6 @@ final class LinkController extends AbstractController
         ]);
     }
     
-    //   // Fonction pour générer un lien basé sur le nom du client et 4 caractères aléatoires
-    //   protected function generateLinkUrl(Link $link): string
-    //   {
-    //       // Générer un lien unique basé sur le nom du client et 4 caractères aléatoires
-    //       $randomChars = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4);
-    //       return $link->getCustomerName() . '-' . $randomChars; // Exemple de génération de lien
-    //   }
     
     #[Route('/open/{fullUrl}', name: 'link_open', methods: ['GET'])]
     public function showOpenPage(string $fullUrl, Request $request, EntityManagerInterface $em): Response
@@ -143,9 +136,6 @@ final class LinkController extends AbstractController
         if (!$link) {
             return $this->redirectToRoute('homepage'); // lien inexistant
         }
-         // -- Future validation du mot de passe du lien --
-        $submittedPassword = $request->request->get('password');
-        // TODO: comparer ici
         
         $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
             $status = false; // statut invalide
