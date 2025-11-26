@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paramètres{% endblock %}
+
+{% block body %}
+<h1>Paramètres Superadmin</h1>
+
+<div class="settings-container">
+    <div class="settings-card">
+        <h2>Apparence</h2>
+        <p>Modifier l’image de fond et le texte du backoffice</p>
+        <a class="btn" href="{{ path('superadmin_settings_appearance') }}">Modifier</a>
+    </div>
+
+    <div class="settings-card">
+        <h2>Contenu portail</h2>
+        <p>Modifier le texte de la page d’ouverture, RGPD…</p>
+        <a class="btn" href="{{ path('superadmin_settings_content') }}">Modifier</a>
+    </div>
+
+    <div class="settings-card">
+        <h2>Système</h2>
+        <p>Configuration technique du serveur, email, etc.</p>
+        <a class="btn" href="{{ path('superadmin_settings_system') }}">Modifier</a>
+    </div>
+</div>
+{% endblock %}
