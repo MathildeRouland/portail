@@ -68,9 +68,9 @@ final class LinkController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Générer les 8 caractères aléatoires
-            $code = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 5)), 0, 8);
-            $link->setEightRandomCharacters($code);
+            // Générer les 4 caractères aléatoires
+            $code = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 5)), 0, 4);
+            $link->setFourRandomCharacters($code);
             
             // Créer l'URL
             $baseUrl = $request->getSchemeAndHttpHost(); // Ex: http://localhost
@@ -94,7 +94,7 @@ final class LinkController extends AbstractController
                 'generated_url' => $url,
             ]);
         }
-        
+
         // Retourner le formulaire et afficher la génération du lien avant soumission
         return $this->render('link/create.html.twig', [
             'form' => $form->createView(),

@@ -17,7 +17,6 @@ class Link
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank(groups: ['create'])]
     #[Assert\Length(max: 255)]
     #[Assert\Url]
     #[ORM\Column(length: 255)]
@@ -32,13 +31,12 @@ class Link
     #[ORM\Column(length: 255)]
     private ?string $customerName = null;
 
-    #[Assert\NotBlank(groups: ['create'])]
-    #[Assert\Length(min: 8, max: 12)]
+    #[Assert\Length(min: 4, max: 8)]
     #[Assert\Regex(
         pattern: "/^[A-Z0-9]+$/",
         message: "Les caractères aléatoires doivent être en majuscules et chiffres."
     )]
-    #[ORM\Column(length: 8)]
+    #[ORM\Column(length: 4)]
     private ?string $fourRandomCharacters = null;
 
     #[Assert\Type(\DateTimeInterface::class)]
