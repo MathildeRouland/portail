@@ -40,13 +40,12 @@ class Link
     private ?string $fourRandomCharacters = null;
 
     #[Assert\Type(\DateTimeInterface::class)]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $startDate = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $startDate = null;
 
     #[Assert\Type(\DateTimeInterface::class)]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $endDate = null;
-
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $endDate = null;
     #[Assert\Regex(
         pattern: "/^\+[1-9]\d{7,14}$/",
        groups: ['create', 'edit'],
@@ -60,12 +59,11 @@ class Link
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerEmail = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
-
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
     #[ORM\Column]
     private ?bool $status = null;
 
@@ -121,24 +119,24 @@ class Link
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?\DateTimeImmutable
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): static
+    public function setStartDate(?\DateTimeImmutable $startDate): static
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeInterface
+    public function getEndDate(): ?\DateTimeImmutable
     {
         return $this->endDate;
     }
 
-    public function setEndDate(?\DateTimeInterface $endDate): static
+    public function setEndDate(?\DateTimeImmutable $endDate): static
     {
         $this->endDate = $endDate;
 
@@ -169,24 +167,24 @@ class Link
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
 
@@ -255,13 +253,22 @@ class Link
             return;
         }
 
-        // Si la date de fin est définie et qu'elle est passée, on met le statut à false (0)
-        if ($this->endDate !== null && $this->endDate < new \DateTime()) {
+        $now = new \DateTimeImmutable();
+
+        // Si la date de début est dans le futur, le lien n'est pas encore actif
+        if ($this->startDate !== null && $this->startDate > $now) {
             $this->status = false;
-        } else {
-            // Si la date de fin n'est pas définie ou n'est pas encore passée, on met le statut à true (1)
-            $this->status = true;
+            return;
         }
+
+        // Si la date de fin est passée, le lien est expiré
+        if ($this->endDate !== null && $this->endDate < $now) {
+            $this->status = false;
+            return;
+        }
+
+        // Sinon, le lien est actif
+        $this->status = true;
     }
     
     /**
@@ -279,12 +286,10 @@ class Link
      * Set createdAt automatically when the entity is first persisted
      */
     #[ORM\PrePersist]
-    public function onPrePersist(): void
+     public function onPrePersist(): void
     {
-        $now = new \DateTime();
-
         if ($this->createdAt === null) {
-            $this->createdAt = $now;
+            $this->createdAt = new \DateTimeImmutable();
         }
     }
 
@@ -294,6 +299,23 @@ class Link
     #[ORM\PreUpdate]
     public function onPreUpdate(): void
     {
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function isActiveAt(\DateTimeImmutable $now): bool
+    {
+        if ($this->permanent) {
+            return true;
+        }
+
+        if ($this->startDate !== null && $this->startDate > $now) {
+            return false;
+        }
+
+        if ($this->endDate !== null && $this->endDate < $now) {
+            return false;
+        }
+
+        return true;
     }
 }

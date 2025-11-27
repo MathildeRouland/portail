@@ -18,8 +18,8 @@ class OpeningHistory
     #[ORM\Column]
     private ?bool $status = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $openingDate = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $openingDate = null;
 
     #[ORM\ManyToOne(targetEntity: Link::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -51,12 +51,12 @@ class OpeningHistory
         return $this;
     }
 
-    public function getOpeningDate(): ?\DateTimeInterface
+    public function getOpeningDate(): ?\DateTimeImmutable
     {
         return $this->openingDate;
     }
 
-    public function setOpeningDate(\DateTimeInterface $openingDate): static
+    public function setOpeningDate(\DateTimeImmutable $openingDate): static
     {
         $this->openingDate = $openingDate;
 

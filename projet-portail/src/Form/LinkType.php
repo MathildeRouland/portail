@@ -30,11 +30,13 @@ class LinkType extends AbstractType
                 'label' => 'Date de début',
                 'widget' => 'single_text',
                 'required' => false,
+                'input' => 'datetime_immutable',
             ])
             ->add('endDate', DateTimeType::class, [
                 'label' => 'Date de fin',
                 'widget' => 'single_text',
                 'required' => false,
+                'input' => 'datetime_immutable',
             ])
             ->add('permanent', CheckboxType::class, [
                 'label' => 'Lien permanent (aucune période de validité)',

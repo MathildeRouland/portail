@@ -137,31 +137,10 @@ final class LinkController extends AbstractController
             return $this->redirectToRoute('homepage'); // lien inexistant
         }
         
-        $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
-            $status = false; // statut invalide
-        if ($link->isPermanent()) {
-            // Lien permanent, toujours valide
-            $status = true;
-       } else {
-           $tz = new \DateTimeZone('Europe/Paris');
-
-        $start = $link->getStartDate();
-        $end = $link->getEndDate();
-
-        $status = false;
-
-        if ($start !== null && $end !== null) {
-            // Ici PHP sait que $start et $end sont des objets DateTime
-            /** @var \DateTime $start */
-            /** @var \DateTime $end */
-            $start->setTimezone($tz);
-            $end->setTimezone($tz);
-
-            if ($link->isStatus() && $start < $now && $end > $now) {
-                $status = true;
-            }
-        }
-    }
+       // utilisation de DateTimeImmutable pour comparaison non destructive
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $status = $link->isActiveAt($now);
+        
         // Enregistrer l'ouverture dans l'historique
         $history = new \App\Entity\OpeningHistory();
         $history->setStatus($status);
