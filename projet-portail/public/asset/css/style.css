@@ -601,4 +601,15 @@ button,
   .action-btns {
     gap: 0.4rem;
   }
+
+  #loadingMessage {
+    color: #fff;
+    background: #333;
+    padding: 10px 20px;
+    border-radius: 5px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
 } 
