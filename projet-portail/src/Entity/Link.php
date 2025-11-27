@@ -253,7 +253,7 @@ class Link
             return;
         }
 
-        $now = new \DateTimeImmutable();
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
 
         // Si la date de début est dans le futur, le lien n'est pas encore actif
         if ($this->startDate !== null && $this->startDate > $now) {
@@ -289,7 +289,7 @@ class Link
      public function onPrePersist(): void
     {
         if ($this->createdAt === null) {
-            $this->createdAt = new \DateTimeImmutable();
+            $this->createdAt = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
         }
     }
 
@@ -299,7 +299,7 @@ class Link
     #[ORM\PreUpdate]
     public function onPreUpdate(): void
     {
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
     }
 
     public function isActiveAt(\DateTimeImmutable $now): bool

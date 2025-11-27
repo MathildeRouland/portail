@@ -84,7 +84,20 @@ final class LinkController extends AbstractController
             if (!$link->getUpdater()) {
                 $link->setUpdater($this->getUser());
             }
-            
+            $start = $form->get('startDate')->getData();
+            $end   = $form->get('endDate')->getData();
+
+            if ($start instanceof \DateTimeInterface) {
+                $start = (new \DateTimeImmutable($start->format('Y-m-d H:i:s'), new \DateTimeZone('Europe/Paris')));
+            }
+
+            if ($end instanceof \DateTimeInterface) {
+                $end = (new \DateTimeImmutable($end->format('Y-m-d H:i:s'), new \DateTimeZone('Europe/Paris')));
+            }
+
+            $link->setStartDate($start);
+            $link->setEndDate($end);
+
             // createdAt/updatedAt are set automatically by the Link entity lifecycle callbacks
             
             $em->persist($link);
@@ -138,7 +151,8 @@ final class LinkController extends AbstractController
         }
         
        // utilisation de DateTimeImmutable pour comparaison non destructive
-        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
+
         $status = $link->isActiveAt($now);
         
         // Enregistrer l'ouverture dans l'historique
