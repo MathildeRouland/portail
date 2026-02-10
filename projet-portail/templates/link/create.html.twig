@@ -14,27 +14,27 @@
 <div class="form-group">
     {{ form_label(form.startDate) }}
     {{ form_widget(form.startDate) }}
-    {{ form_errors(form.startDate, {'attr': {'class': 'form-error'}}) }}
+    {{ form_errors(form.startDate) }}
 </div>
 <div class="form-group">
     {{ form_label(form.endDate) }}
     {{ form_widget(form.endDate) }}
-    {{ form_errors(form.endDate, {'attr': {'class': 'form-error'}}) }}
+    {{ form_errors(form.endDate) }}
 </div>
 <div class="form-group">
     {{ form_label(form.permanent) }}
     {{ form_widget(form.permanent) }}
-    {{ form_errors(form.permanent, {'attr': {'class': 'form-error'}}) }}
+    {{ form_errors(form.permanent) }}
 </div>
 <div class="form-group">
     {{ form_label(form.customerPhoneNumber) }}
     {{ form_widget(form.customerPhoneNumber) }}
-    {{ form_errors(form.customerPhoneNumber, {'attr': {'class': 'form-error'}}) }}
+    {{ form_errors(form.customerPhoneNumber) }}
 </div>
 <div class="form-group">
     {{ form_label(form.customerEmail) }}
     {{ form_widget(form.customerEmail) }}
-    {{ form_errors(form.customerEmail, {'attr': {'class': 'form-error'}}) }}
+    {{ form_errors(form.customerEmail) }}
 </div>
 
 {# Les champs creator/updater/createdAt sont gérés automatiquement, ne pas les rendre dans le formulaire de création #}

@@ -1,0 +1,13 @@
+{% use "form_div_layout.html.twig" %}
+
+{% block form_label %}
+    {% if label is not same as(false) %}
+        <label for="{{ id }}">
+            {{ label|trans }}
+            {% if required %}
+                <span class="required">*</span>
+            {% endif %}
+            {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}" {% endfor %}
+        </label>
+    {% endif %}
+{% endblock %}

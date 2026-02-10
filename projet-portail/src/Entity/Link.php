@@ -46,6 +46,7 @@ class Link
     #[Assert\Type(\DateTimeInterface::class)]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $endDate = null;
+    
     #[Assert\Regex(
         pattern: "/^(?:\+[\d]{1,3}\s?\d{4,14}|\(?0[67]\)?\s?\d{2}(\s?\d{2}){3})$/",
        groups: ['create', 'edit'],

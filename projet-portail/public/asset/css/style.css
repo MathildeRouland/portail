@@ -612,4 +612,14 @@ button,
     right: 20px;
     z-index: 1000;
 }
-} 
+
+span.required {
+    color: red !important; /* force la couleur rouge */
+}
+
+ul.form-errors,
+ul li {
+    color: red;
+    font-size: 0.9em;
+}
+}
