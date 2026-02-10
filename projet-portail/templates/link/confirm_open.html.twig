@@ -1,4 +1,3 @@
-
 {% extends 'base.html.twig' %}
 {% block title %}lien valide{% endblock %}
 
@@ -8,7 +7,16 @@
 <p>Nom du client : <strong>{{ link.customerName }}</strong></p>
 
 <form id="openPortalForm" action="{{ path('link_open_validate', { fullUrl: fullUrl }) }}" method="post">
-    <button type="submit">Ouvrir le portail</button>
+    
+    <!-- Case à cocher RGPD -->
+    <div style="margin-bottom: 10px;">
+        <input type="checkbox" id="rgpdConsent" />
+        <label for="rgpdConsent">
+            J'accepte les <a href="#" id="rgpdLink" target="_blank">conditions du Règlement de Gestion de la Protection des Données</a>
+        </label>
+    </div>
+
+    <button type="submit" id="openPortalBtn" disabled>Ouvrir le portail</button>
 </form>
 
 <div id="loadingMessage" style="display:none; margin-top: 10px; color: #333;">
@@ -18,16 +26,25 @@
 <script>
 const form = document.getElementById('openPortalForm');
 const loading = document.getElementById('loadingMessage');
+const consent = document.getElementById('rgpdConsent');
+const submitBtn = document.getElementById('openPortalBtn');
 
+// activer le bouton seulement si la case est cochée
+consent.addEventListener('change', function() {
+    submitBtn.disabled = !this.checked;
+});
+
+// afficher message de chargement avant soumission
 form.addEventListener('submit', function(event) {
     event.preventDefault(); // empêche la soumission immédiate
     loading.style.display = 'block'; // affiche le message
-
-    // soumission du formulaire après un très court délai pour que le message s'affiche
     setTimeout(() => {
         form.submit();
-    }, 50); // 50ms suffisent
+    }, 50);
 });
+
+// TODO : plus tard, charger le lien RGPD depuis les paramètres superadmin
+// document.getElementById('rgpdLink').href = ...;
 </script>
 
 {% endblock %}

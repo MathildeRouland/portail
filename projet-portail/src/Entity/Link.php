@@ -47,15 +47,15 @@ class Link
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $endDate = null;
     #[Assert\Regex(
-        pattern: "/^\+[1-9]\d{7,14}$/",
+        pattern: "/^(?:\+[\d]{1,3}\s?\d{4,14}|\(?0[67]\)?\s?\d{2}(\s?\d{2}){3})$/",
        groups: ['create', 'edit'],
-        message: "Le numéro de téléphone doit être au format international E.164 (ex : +33123456789)."
+        message: "Le numéro de téléphone doit être au format français 06 xx xx xx xx ou international E.164 (ex : +33123456789)."
     )]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerPhoneNumber = null;
 
     #[Assert\Email(message: "L'adresse email n'est pas valide.")]
-    #[Assert\NotBlank(groups: ['create'])]
+    // #[Assert\NotBlank(groups: ['create'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerEmail = null;
 

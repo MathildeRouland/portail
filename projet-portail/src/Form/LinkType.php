@@ -31,12 +31,14 @@ class LinkType extends AbstractType
                 'widget' => 'single_text',
                 'required' => false,
                 'input' => 'datetime_immutable',
+                'data' => (new \DateTimeImmutable())->setTime(8, 0), 
             ])
             ->add('endDate', DateTimeType::class, [
                 'label' => 'Date de fin',
                 'widget' => 'single_text',
                 'required' => false,
                 'input' => 'datetime_immutable',
+                'data' => (new \DateTimeImmutable())->setTime(8, 0), 
             ])
             ->add('permanent', CheckboxType::class, [
                 'label' => 'Lien permanent (aucune période de validité)',
@@ -47,15 +49,15 @@ class LinkType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new Regex([
-                        'pattern' => "/^\+[1-9]\d{7,14}$/",
-                        'message' => "Format international requis (ex : +33123456789).",
+                        'pattern' => "/^(?:\+[\d]{1,3}\s?\d{4,14}|\(?0[67]\)?\s?\d{2}(\s?\d{2}){3})$/",
+                        'message' => "Le numéro de téléphone doit être au format français 06 xx xx xx xx ou international E.164 (ex : +33123456789).",
                         'groups' => ['create', 'edit'],
                     ])
                 ],
             ])
             ->add('customerEmail', EmailType::class, [
                 'label' => 'Email du client',
-                'required' => true,
+                'required' => false,
             ])
             ->add('status', CheckboxType::class, [
                 'label' => 'Actif',

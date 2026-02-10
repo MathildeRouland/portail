@@ -105,6 +105,11 @@ final class LinkController extends AbstractController
             
             return $this->render('link/success.html.twig', [
                 'generated_url' => $url,
+                'is_permanent' => $link->isPermanent(),
+                'start_date' => $link->getStartDate(),
+                'end_date' => $link->getEndDate(),
+                'phone_number' => $link->getCustomerPhoneNumber(),
+                'email' => $link->getCustomerEmail(),
             ]);
         }
 
@@ -112,6 +117,7 @@ final class LinkController extends AbstractController
         return $this->render('link/create.html.twig', [
             'form' => $form->createView(),
             'generated_link' => $link->getUrl(), // Affichage du lien généré dans la vue
+    
         ]);
     }
     

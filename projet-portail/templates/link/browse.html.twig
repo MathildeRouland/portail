@@ -20,7 +20,9 @@
                 <tr>
                     <th>Identifiant</th>                    
                     <th>URL</th>
-                    <th>Client</th>
+                    <th>Usager</th>
+                    <th>Email</th>
+                    <th>téléphone</th>
                     <th>Date de début</th>
                     <th>Date de fin</th>
                     <th>Statut</th>
@@ -42,7 +44,9 @@
                                 {{ link.url }}
                             </a>
                         </td>
-                        <td data-label="Nom du client  :">{{ link.customerName }}</td>
+                        <td data-label="Nom de l'usager  :">{{ link.customerName }}</td>
+                        <td data-label="Email  :">{{ link.customerEmail }}</td>
+                        <td data-label="Téléphone  :">{{ link.customerPhonenumber }}</td>
                         <td data-label="Date de début :">{{ link.startDate ? link.startDate|date('d/m/Y H:i') : 'Non défini' }}</td>
                         <td data-label="Date de fin :">{{ link.endDate ? link.endDate|date('d/m/Y H:i') : 'Non défini' }}</td>
                         <td data-label="Statut :">

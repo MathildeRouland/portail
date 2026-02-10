@@ -5,4 +5,11 @@
 {% block body %}
     <h1>Lien généré avec succès</h1>
     <p>Voici le lien : <a href="{{ generated_url }}">{{ generated_url }}</a></p>
+    {% if is_permanent %}
+        <p>Accès permanent au portail</p>
+    {% else %}
+        <p>accès disponible au portail du: {{ start_date|date('d/m/Y H:i') }} au: {{ end_date|date('d/m/Y H:i') }}</p>
+    {% endif %}
+    <p>numéro de téléphone de l'utilisateur: {{ phone_number }}
+    <p>adresse mail de l'utilisateur: {{ email }}
 {% endblock %}
