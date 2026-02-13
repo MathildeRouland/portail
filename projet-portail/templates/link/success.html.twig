@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lien généré{% endblock %}
+
+{% block body %}
+    <h1>Lien généré avec succès</h1>
+    <p>Voici le lien : <a href="{{ generated_url }}">{{ generated_url }}</a></p>
+    <p>Mot de passe client : <strong>{{ customer_password }}</strong></p>
+{% endblock %}

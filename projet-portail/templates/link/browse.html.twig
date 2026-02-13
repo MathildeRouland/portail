@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste de mes liens {% endblock %}
+
+{% block body %}
+    <h1>
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            Liste de tous les liens
+        {% else %}
+            Liste de mes liens
+        {% endif %}
+    </h1>
+
+    {% if links is empty %}
+        <p>Aucun lien n'a été créé pour le moment.</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Identifiant</th>                    
+                    <th>URL</th>
+                    <th>Client</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>Statut</th>
+                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                        <th>Créateur</th>
+                        <th>Date de création</th>
+                        <th>Modifié par</th>
+                        <th>Date de modification</th>
+                    {% endif %}
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for link in links %}
+                    <tr>
+                        <td>{{ link.id }}</td>
+                        <td>
+                            <a href="{{ link.url }}" target="_blank">
+                                {{ link.url }}
+                            </a>
+                        </td>
+                        <td>{{ link.customerName }}</td>
+                        <td>{{ link.startDate ? link.startDate|date('d/m/Y H:i') : 'Non défini' }}</td>
+                        <td>{{ link.endDate ? link.endDate|date('d/m/Y H:i') : 'Non défini' }}</td>
+                        <td>
+                            {% if link.status %}
+                                <span class="status-active">Actif</span>
+                            {% else %}
+                                <span class="status-inactive">Inactif</span>
+                            {% endif %}
+                        </td>
+                        {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <td>{{ link.creator.username }}</td>
+                            <td>{{ link.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ link.updater.username }}</td>
+                            <td>{{ link.updatedAt|date('d/m/Y H:i') }}</td>
+                        {% endif %}
+                        <td>
+                            <a href="{{ path('link_edit', {'id': link.id}) }}" class="btn btn-sm">Modifier</a>
+                                <form method="post" action="{{ path('link_delete', {'id': link.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce lien ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-link-' ~ link.id) }}">
+                                    <button class="btn btn-sm btn-danger btn-action btn-normal" type="submit">Supprimer</button>
+                                </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

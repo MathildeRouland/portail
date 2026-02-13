@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Portail Thoiry{% endblock %}</title>
+
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('asset/css/style.css') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+        <script src="{{ asset('asset/js/generateLink.js') }}"></script>
+    {% endblock %}
+</head>
+<body>
+
+<header>
+    <h1>Portail de l’Orangerie</h1>
+    <nav>
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <a href="{{ path('link_create') }}">Créer un lien</a>
+        <a href="{{ path('link_browse') }}">Gérer mes liens</a>
+        <a href="{{ path('user_browse') }}">Gérer les utilisateurs</a>
+        <a href="{{ path('opening_history_browse') }}">Voir l'historique</a>
+        {% if app.user %}
+               {{ app.user.userIdentifier }}
+        {% endif %}
+        <a href="{{ path('app_logout') }}">Déconnexion</a>
+    {% elseif is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('link_create') }}">Créer un lien</a>
+        <a href="{{ path('link_browse') }}">Gérer mes liens</a>
+        {% if app.user %}
+                {{ app.user.userIdentifier }}
+        {% endif %}
+        <a href="{{ path('app_logout') }}">Déconnexion</a>
+    {% else %}
+        <a href="{{ path('app_login') }}">Me connecter</a>
+    {% endif %}
+</nav>
+</header>
+
+<main>
+   
+    
+    {% block body %}{% endblock %}
+</main>
+
+<footer>
+    © {{ "now"|date("Y") }} L’Orangerie de Thoiry — Tous droits réservés
+</footer>
+
+</body>
+{% block javascripts %}
+    <script src="{{ asset('asset/js/link-permanent.js') }}"></script>
+{% endblock %}
+</html>

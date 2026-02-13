@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Historique d'ouverture du portail {% endblock %}
+
+{% block body %}
+    <h1>Historique d'ouverture</h1>
+
+    {% if openingHistories is empty %}
+        <p>Aucun historique n'a été créé pour le moment.</p>
+    {% else %}
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statut</th>
+                        <th>Date d'ouverture</th>
+                        <th>Adresse IP</th>
+                        <th>Nom du client</th>
+                        <th>URL</th>
+                        <th>ID du lien</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for history in openingHistories %}
+                        <tr>
+                             <td class="{{ history.status ? 'green' : 'red' }}">
+                                {{ history.status ? 'Ouvert' : 'Refusé' }}
+                            </td>
+                            <td>{{ history.openingDate|date('d/m/Y H:i') }}</td>
+                            <td>{{ history.ipAddress }}</td>
+                            <td>{{ history.link ? history.link.customerName : '' }}</td>
+                            <td>
+                                <a href="{{ history.url }}" target="_blank">
+                                    {{ history.url }}
+                                </a>
+                            </td>
+                            <td>{{ history.link ? history.link.id : '' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endif %}
+{% endblock %}

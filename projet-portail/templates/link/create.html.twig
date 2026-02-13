@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+{% block title %}Créer un lien{% endblock %}
+
+{% block body %}
+<h1>Créer un lien</h1>
+
+{{ form_start(form) }}
+
+<div class="form-group">
+    {{ form_label(form.customerName) }}
+    {{ form_widget(form.customerName) }}
+    {{ form_errors(form.customerName, {'attr': {'class': 'form-error'}}) }}
+</div>
+<div class="form-group">
+    {{ form_label(form.startDate) }}
+    {{ form_widget(form.startDate) }}
+    {{ form_errors(form.startDate, {'attr': {'class': 'form-error'}}) }}
+</div>
+<div class="form-group">
+    {{ form_label(form.endDate) }}
+    {{ form_widget(form.endDate) }}
+    {{ form_errors(form.endDate, {'attr': {'class': 'form-error'}}) }}
+</div>
+<div class="form-group">
+    {{ form_label(form.permanent) }}
+    {{ form_widget(form.permanent) }}
+    {{ form_errors(form.permanent, {'attr': {'class': 'form-error'}}) }}
+</div>
+<div class="form-group">
+    {{ form_label(form.customerPhoneNumber) }}
+    {{ form_widget(form.customerPhoneNumber) }}
+    {{ form_errors(form.customerPhoneNumber, {'attr': {'class': 'form-error'}}) }}
+</div>
+<div class="form-group">
+    {{ form_label(form.customerEmail) }}
+    {{ form_widget(form.customerEmail) }}
+    {{ form_errors(form.customerEmail, {'attr': {'class': 'form-error'}}) }}
+</div>
+
+{# Les champs creator/updater/createdAt sont gérés automatiquement, ne pas les rendre dans le formulaire de création #}
+    {# Afficher le lien et le mot de passe générés avant l'envoi #}
+    <div>
+        <strong>Lien généré : </strong>
+        <span>{{ generated_link }}</span>
+    </div>
+    <div>
+        <strong>Mot de passe client généré : </strong>
+        <span>{{ customer_password }}</span>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Créer le lien</button>
+    </div>
+
+{{ form_end(form, {'render_rest': true}) }}
+
+{% endblock %}

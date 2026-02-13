@@ -1,0 +1,10 @@
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # On d�sactive l'acc�s direct aux fichiers qui existent
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # Rediriger toutes les requ�tes vers index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
