@@ -5,6 +5,20 @@
 {% block body %}
     {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
        <h1>Bienvenue sur le backoffice de l'Orangerie</h1>
+       {% if settings and settings.backgroundImage %}
+<style>
+body {
+    background-image: url('{{ asset('uploads/' ~ settings.backgroundImage) }}');
+    background-size: cover;
+}
+</style>
+{% endif %}
+{% if settings and settings.homepageText %}
+<div class = "homepage-content">
+{{ settings.homepageText|raw }}
+</div>
+{% endif %}
+
     {% else %}
         <h1>Vous n'êtes pas autorisé à accéder à ce site</h1>
     {% endif %}

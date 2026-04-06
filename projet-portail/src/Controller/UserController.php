@@ -29,12 +29,7 @@ final class UserController extends AbstractController
     //         'path' => 'src/Controller/UserController.php',
     //     ]);
     // }
-    #[Route('/', name: 'homepage')]
-    public function home ()
-{
-     // Passer les utilisateurs au template
-     return $this->render('homepage.html.twig');
-}
+    
 
     #[Route('/users', name: 'user_browse')]
     public function browse(UserRepository $userRepository): Response

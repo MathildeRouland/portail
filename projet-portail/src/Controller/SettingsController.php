@@ -6,6 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Entity\Settings;
+use App\Form\SettingsContentType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Form\SettingsAppearanceType;
 
 #[IsGranted('ROLE_SUPER_ADMIN')]
 #[Route('/superadmin/settings', name: 'superadmin_settings_')]
@@ -30,20 +36,58 @@ class SettingsController extends AbstractController
     }
 
     #[Route('/content', name: 'content')]
-    public function content(): Response
+    public function content(Request $request, EntityManagerInterface $em)
     {
+       $settings = $em->getRepository(Settings::class)->findOneBy([]) ?? new Settings();
         // Ici tu pourras récupérer le texte du portail, RGPD, etc.
-        return $this->render('settings/content.html.twig', [
-            'page_title' => 'Paramètres de Contenu',
-        ]);
+       $form = $this->createForm(SettingsContentType::class, $settings);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+
+        $rgpdFile = $form->get('rgpdFile')->getData();
+
+        if ($rgpdFile) {
+            $filename = 'rgpd_'.uniqid().'.'.$rgpdFile->guessExtension();
+            $rgpdFile->move($this->getParameter('uploads_directory'), $filename);
+            $settings->setRgpdFile($filename);
+        }
+
+        $em->persist($settings);
+        $em->flush();
     }
 
+    return $this->render('settings/content.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
+    
+
     #[Route('/appearance', name: 'appearance')]
-    public function appearance(): Response
-    {
-        // Ici tu pourras gérer l'image de fond, couleurs, etc.
-        return $this->render('settings/appearance.html.twig', [
-            'page_title' => 'Paramètres d’Apparence',
-        ]);
+    public function appearance(Request $request, EntityManagerInterface $em)
+{
+    $settings = $em->getRepository(Settings::class)->findOneBy([]) ?? new Settings();
+
+    $form = $this->createForm(SettingsAppearanceType::class, $settings);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+
+        $file = $form->get('backgroundImage')->getData();
+
+        if ($file) {
+            $filename = 'bg_'.uniqid().'.'.$file->guessExtension();
+            $file->move($this->getParameter('uploads_directory'), $filename);
+            $settings->setBackgroundImage($filename);
+        }
+
+        $em->persist($settings);
+        $em->flush();
     }
+
+    return $this->render('settings/appearance.html.twig', [
+        'form' => $form->createView(),
+        'page_title' => 'Paramètres d\'apparence',
+    ]);
+}
 }
