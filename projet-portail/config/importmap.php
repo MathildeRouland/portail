@@ -11,11 +11,13 @@
  *
  * The "importmap:require" command can be used to add new entries to this file.
  */
+
 return [
     'app' => [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
+   
     //  'imports' => [
     //     'app' => 'assets/app.js',
     //     'link-permanent' => 'assets/js/link-permanent.js',
@@ -29,6 +31,10 @@ return [
     // ],
     'ckeditor5' => [
         'version' => '47.2.0',
+    ],
+     'admin-editor' => [
+    'path' => './assets/js/admin-editor.js',
+    'entrypoint' => true,
     ],
     '@ckeditor/ckeditor5-adapter-ckfinder/dist/index.js' => [
         'version' => '47.2.0',

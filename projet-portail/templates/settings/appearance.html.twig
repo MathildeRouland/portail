@@ -6,5 +6,7 @@
 <h1>{{ page_title }}</h1>
 
 <p>Ici, vous pouvez modifier l'apparence du backoffice du portail.</p>
-
+{{ form_widget(form.content, {
+    attr: { class: 'js-ckeditor' }
+}) }}
 {% endblock %}

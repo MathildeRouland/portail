@@ -1,5 +1,7 @@
 {% use "form_div_layout.html.twig" %}
-
+{% block javascripts %}
+    {{ importmap('admin-editor') }}
+{% endblock %}
 {% block form_label %}
     {% if label is not same as(false) %}
         <label for="{{ id }}">
