@@ -45,6 +45,10 @@ class SettingsController extends AbstractController
 
     if ($form->isSubmitted() && $form->isValid()) {
 
+         if ($form->get('removePortalText')->getData()) {
+            $settings->setPortalText(null); // ou '' si tu préfères vide
+        }
+
         $rgpdFile = $form->get('rgpdFile')->getData();
 
         if ($rgpdFile) {
@@ -52,6 +56,38 @@ class SettingsController extends AbstractController
             $rgpdFile->move($this->getParameter('uploads_directory'), $filename);
             $settings->setRgpdFile($filename);
         }
+        $uploadsDir = $this->getParameter('uploads_directory');
+
+        // suppression demandée
+        if ($form->get('removeRgpd')->getData() && $settings->getRgpdFile()) {
+            $oldFile = $uploadsDir.'/'.$settings->getRgpdFile();
+
+            if (file_exists($oldFile)) {
+                unlink($oldFile);
+            }
+
+            $settings->setRgpdFile(null);
+        }
+
+        // upload nouveau fichier
+        $rgpdFile = $form->get('rgpdFile')->getData();
+
+        if ($rgpdFile) {
+
+            // supprimer ancien fichier si existe
+            if ($settings->getRgpdFile()) {
+                $oldFile = $uploadsDir.'/'.$settings->getRgpdFile();
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+
+            $filename = 'rgpd_'.uniqid().'.'.$rgpdFile->guessExtension();
+            $rgpdFile->move($uploadsDir, $filename);
+
+            $settings->setRgpdFile($filename);
+        }
+       
 
         $em->persist($settings);
         $em->flush();
@@ -59,6 +95,7 @@ class SettingsController extends AbstractController
 
     return $this->render('settings/content.html.twig', [
         'form' => $form->createView(),
+        'page_title' => 'Paramètres de contenu',
     ]);
 }
     
@@ -72,18 +109,35 @@ class SettingsController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+        $uploadsDir = $this->getParameter('uploads_directory');
 
+        // 1️⃣ Supprimer l'ancienne image si demandé
+        if ($form->get('removeBackground')->getData() && $settings->getBackgroundImage()) {
+            $oldFile = $uploadsDir . '/' . $settings->getBackgroundImage();
+            if (file_exists($oldFile)) {
+                unlink($oldFile);
+            }
+            $settings->setBackgroundImage(null);
+        }
+
+        // 2️⃣ Uploader la nouvelle image
         $file = $form->get('backgroundImage')->getData();
-
         if ($file) {
-            $filename = 'bg_'.uniqid().'.'.$file->guessExtension();
-            $file->move($this->getParameter('uploads_directory'), $filename);
+            $filename = uniqid() . '.' . $file->guessExtension();
+            $file->move($uploadsDir, $filename);
+
+            // Supprimer l'ancienne image si elle existe
+            if ($settings->getBackgroundImage() && file_exists($uploadsDir.'/'.$settings->getBackgroundImage())) {
+                unlink($uploadsDir.'/'.$settings->getBackgroundImage());
+            }
+
             $settings->setBackgroundImage($filename);
         }
 
         $em->persist($settings);
         $em->flush();
     }
+    
 
     return $this->render('settings/appearance.html.twig', [
         'form' => $form->createView(),

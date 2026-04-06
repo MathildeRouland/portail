@@ -3,6 +3,11 @@
 
 {% block body %}
 <h2>Ouverture du portail</h2>
+{% if portalText %}
+    <div style="margin-bottom: 15px;">
+        {{ portalText|raw }}
+    </div>
+{% endif %}
 
 <p>Nom du client : <strong>{{ link.customerName }}</strong></p>
 
@@ -12,7 +17,9 @@
     <div style="margin-bottom: 10px;">
         <input type="checkbox" id="rgpdConsent" />
         <label for="rgpdConsent">
-            J'accepte les <a href="#" id="rgpdLink" target="_blank">conditions du Règlement de Gestion de la Protection des Données</a>
+            J'accepte les <a href="{{ rgpdFile ? asset('uploads/' ~ rgpdFile) : '#' }}" id="rgpdLink" target="_blank">
+    conditions du Règlement de Gestion de la Protection des Données
+</a>
         </label>
     </div>
 

@@ -15,6 +15,7 @@ use App\Entity\Link;
 use App\Form\LinkType;
 use App\Form\LinkEditType;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use App\Entity\Settings;
 
 final class LinkController extends AbstractController
 {
@@ -128,6 +129,7 @@ final class LinkController extends AbstractController
         $currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
 
         $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+        $settings = $em->getRepository(Settings::class)->findOneBy([]);
 
         if (!$link) {
             return $this->redirectToRoute('homepage');
@@ -136,6 +138,8 @@ final class LinkController extends AbstractController
         return $this->render('link/confirm_open.html.twig', [
             'link' => $link,
             'fullUrl' => $fullUrl,
+            'rgpdFile' => $settings?->getRgpdFile(),
+            'portalText' => $settings?->getPortalText(),
         ]);
     }
 

@@ -7,4 +7,25 @@
 
 <p>Ici, vous pouvez modifier le contenu du backoffice du portail.</p>
 
+{{ form_start(form) }}
+{{ form_row(form.portalText) }}
+
+{{ form_row(form.removePortalText) }}
+
+    {{ form_row(form.rgpdFile) }}
+
+    {{ form_row(form.removeRgpd) }}
+
+    {% if form.vars.data.rgpdFile %}
+        <p>
+            Fichier actuel :
+            <a href="{{ asset('uploads/' ~ form.vars.data.rgpdFile) }}" target="_blank">
+                Voir le RGPD
+            </a>
+        </p>
+    {% endif %}
+
+    <button class="btn btn-primary">Enregistrer</button>
+
+{{ form_end(form) }}
 {% endblock %}
