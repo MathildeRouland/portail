@@ -134,12 +134,12 @@ final class LinkController extends AbstractController
         if (!$link) {
             return $this->redirectToRoute('homepage');
         }
-
         return $this->render('link/confirm_open.html.twig', [
             'link' => $link,
             'fullUrl' => $fullUrl,
             'rgpdFile' => $settings?->getRgpdFile(),
             'portalText' => $settings?->getPortalText(),
+            'error' => null,
         ]);
     }
 
@@ -150,8 +150,24 @@ final class LinkController extends AbstractController
         Request $request, 
         EntityManagerInterface $em
     ): Response {
+        
+           
         // Recréer l'URL complète attendue
         $currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
+
+         if (!$request->request->get('rgpdConsent')) {
+
+            $settings = $em->getRepository(Settings::class)->findOneBy([]);
+            $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+
+            return $this->render('link/confirm_open.html.twig', [
+                'link' => $link,
+                'fullUrl' => $fullUrl,
+                'rgpdFile' => $settings?->getRgpdFile(),
+                'portalText' => $settings?->getPortalText(),
+                'error' => 'Vous devez accepter les conditions RGPD.',
+            ]);
+        }
         
         // Chercher le lien en base via l'URL complète
         $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);

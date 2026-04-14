@@ -9,7 +9,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 
 
 class SettingsAppearanceType extends AbstractType
@@ -17,11 +16,9 @@ class SettingsAppearanceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
        $builder
-            ->add('homepageText', CKEditorType::class, [
+            ->add('homepageText', TextareaType::class, [
                 'required' => false,
-                'config' => [
-                    'toolbar' => 'standard',
-                ],
+                'attr' => ['class' => 'js-editor']
             ])
             ->add('backgroundImage', FileType::class, [
             'label' => 'Image de fond',

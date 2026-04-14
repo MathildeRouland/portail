@@ -19,7 +19,7 @@ class SettingsContentType extends AbstractType
         ->add('portalText', TextareaType::class, [
             'label' => 'modifier le texte actuel',
             'required' => false,
-            'attr' => ['class' => 'js-ckeditor']
+            'attr' => ['class' => 'js-editor']
         ])
         ->add('removePortalText', CheckboxType::class, [
             'mapped' => false,

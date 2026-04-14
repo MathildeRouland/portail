@@ -50,11 +50,12 @@
                         <td data-label="Date de début :">{{ link.startDate ? link.startDate|date('d/m/Y H:i') : 'Non défini' }}</td>
                         <td data-label="Date de fin :">{{ link.endDate ? link.endDate|date('d/m/Y H:i') : 'Non défini' }}</td>
                         <td data-label="Statut :">
-                            {% if link.status %}
-                                <span class="status-active">Actif</span>
-                            {% else %}
-                                <span class="status-inactive">Inactif</span>
-                            {% endif %}
+                                        {% if link.isCurrentlyActive %}
+                                            <span style="color:green;">Actif</span>
+                                        {% else %}
+                                            <span style="color:red;">Inactif</span>
+                                        {% endif %}
+                                    </td>
                         </td>
                         {% if is_granted('ROLE_SUPER_ADMIN') %}
                             <td data-label="Créateur :">{{ link.creator.username }}</td>

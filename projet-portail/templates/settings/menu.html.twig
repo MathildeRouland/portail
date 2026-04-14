@@ -18,10 +18,18 @@
         <a class="btn" href="{{ path('superadmin_settings_content') }}">Modifier</a>
     </div>
 
-    <div class="settings-card">
+    <div class="settings-card" style="display: none;">
         <h2>Système</h2>
         <p>Configuration technique du serveur, email, etc.</p>
         <a class="btn" href="{{ path('superadmin_settings_system') }}">Modifier</a>
     </div>
 </div>
+
+<style>
+    /* Masquer le lien Système dans le menu de navigation */
+    nav a[href*="settings_system"],
+    nav li:has(a[href*="settings_system"]) {
+        display: none;
+    }
+</style>
 {% endblock %}

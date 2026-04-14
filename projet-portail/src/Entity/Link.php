@@ -319,4 +319,19 @@ class Link
 
         return true;
     }
+
+    public function isCurrentlyActive(): bool
+{
+    $now = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
+
+    if ($this->getStartDate() && $this->getStartDate() > $now) {
+        return false;
+    }
+
+    if ($this->getEndDate() && $this->getEndDate() < $now) {
+        return false;
+    }
+
+    return true;
+}
 }

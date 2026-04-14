@@ -11,6 +11,17 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <script src="{{ asset('asset/js/generateLink.js') }}"></script>
         <script src="{{ asset('asset/js/link-permanent.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
+        <script src="{{ asset('asset/js/editor.js') }}"></script>
+
+        <!-- Masquer les paramètres système -->
+        <style>
+            a[href*="settings_system"],
+            li a[href*="settings_system"] {
+                display: none !important;
+            }
+        </style>
+
     {% endblock %}
 </head>
 <body>
@@ -30,7 +41,7 @@
             <ul class="settings-submenu">
                 <li><a href="{{ path('superadmin_settings_appearance') }}">Apparence</a></li>
                 <li><a href="{{ path('superadmin_settings_content') }}">Contenu portail</a></li>
-                <li><a href="{{ path('superadmin_settings_system') }}">Système</a></li>
+                <li style="display: none;"><a href="{{ path('superadmin_settings_system') }}">Système</a></li>
             </ul>
         </li>
         {% if app.user %}
@@ -59,6 +70,5 @@
 <footer>
     © {{ "now"|date("Y") }} L’Orangerie de Thoiry — Tous droits réservés
 </footer>
-
 </body>
 </html>

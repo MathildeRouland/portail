@@ -3,6 +3,11 @@
 
 {% block body %}
 <h2>Ouverture du portail</h2>
+{% if error is defined and error %}
+    <div id="rgpdErrorServer" style="color:red; margin-bottom:10px;">
+        {{ error }}
+    </div>
+{% endif %}
 {% if portalText %}
     <div style="margin-bottom: 15px;">
         {{ portalText|raw }}
@@ -12,15 +17,20 @@
 <p>Nom du client : <strong>{{ link.customerName }}</strong></p>
 
 <form id="openPortalForm" action="{{ path('link_open_validate', { fullUrl: fullUrl }) }}" method="post">
-    
+
     <!-- Case à cocher RGPD -->
     <div style="margin-bottom: 10px;">
-        <input type="checkbox" id="rgpdConsent" />
+        <input type="checkbox" id="rgpdConsent" name="rgpdConsent" />
         <label for="rgpdConsent">
             J'accepte les <a href="{{ rgpdFile ? asset('uploads/' ~ rgpdFile) : '#' }}" id="rgpdLink" target="_blank">
-    conditions du Règlement de Gestion de la Protection des Données
-</a>
+                conditions du Règlement de Gestion de la Protection des Données
+            </a>
         </label>
+    </div>
+
+    <!-- ICI tu ajoutes le message -->
+    <div id="rgpdError" style="display:none; color:red; margin-top:10px;">
+        Vous devez accepter les conditions RGPD pour continuer.
     </div>
 
     <button type="submit" id="openPortalBtn" disabled>Ouvrir le portail</button>
@@ -42,16 +52,26 @@ consent.addEventListener('change', function() {
 });
 
 // afficher message de chargement avant soumission
-form.addEventListener('submit', function(event) {
-    event.preventDefault(); // empêche la soumission immédiate
-    loading.style.display = 'block'; // affiche le message
-    setTimeout(() => {
-        form.submit();
-    }, 50);
-});
+// interception submit
+  // bouton état initial
+    submitBtn.disabled = !consent.checked;
 
-// TODO : plus tard, charger le lien RGPD depuis les paramètres superadmin
-// document.getElementById('rgpdLink').href = ...;
+    consent.addEventListener('change', function () {
+        submitBtn.disabled = !this.checked;
+        error.style.display = 'none';
+    });
+
+    form.addEventListener('submit', function (event) {
+
+        if (!consent.checked) {
+            event.preventDefault();
+            error.style.display = 'block';
+            return;
+        }
+
+        // IMPORTANT: ne pas bloquer si OK
+        loading.style.display = 'block';
+    });
 </script>
 
 {% endblock %}

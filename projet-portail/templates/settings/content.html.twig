@@ -3,29 +3,378 @@
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block body %}
-<h1>{{ page_title }}</h1>
+<div class="settings-container">
+    <div class="settings-header">
+        <h1>{{ page_title }}</h1>
+        <p class="settings-subtitle">Gérez le contenu du portail et les documents importants</p>
+    </div>
 
-<p>Ici, vous pouvez modifier le contenu du backoffice du portail.</p>
+    {{ form_start(form) }}
+    
+    <div class="settings-form">
+        <!-- Section : Texte du portail -->
+        <div class="settings-section">
+            <div class="section-icon">📝</div>
+            <div class="section-content">
+                <h2>Texte du portail</h2>
+                <p class="section-description">Ce texte sera affiché sur la page d'ouverture du portail. Vous pouvez ajouter du contenu riche avec mise en forme.</p>
+                
+                <div class="form-group">
+                    {{ form_label(form.portalText, 'Contenu du portail') }}
+                    {{ form_widget(form.portalText, {
+                        'attr': {
+                            'class': 'js-editor form-control-editor',
+                            'rows': 12
+                        }
+                    }) }}
+                    {% if form.portalText.vars.errors %}
+                        <div class="form-error">
+                            {{ form_errors(form.portalText) }}
+                        </div>
+                    {% endif %}
+                </div>
 
-{{ form_start(form) }}
-{{ form_row(form.portalText) }}
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="removePortalText" name="{{ form.removePortalText.vars.full_name }}" value="1" class="checkbox-input">
+                    <label for="removePortalText" class="checkbox-label">
+                        🗑️ Supprimer le texte du portail
+                    </label>
+                </div>
+            </div>
+        </div>
 
-{{ form_row(form.removePortalText) }}
+        <!-- Séparateur -->
+        <hr class="section-divider">
 
-    {{ form_row(form.rgpdFile) }}
+        <!-- Section : Document RGPD -->
+        <div class="settings-section">
+            <div class="section-icon">📋</div>
+            <div class="section-content">
+                <h2>Document RGPD / Conditions d'utilisation</h2>
+                <p class="section-description">Téléchargez le fichier PDF contenant vos conditions d'utilisation ou politique de confidentialité.</p>
+                
+                <div class="form-group">
+                    {{ form_label(form.rgpdFile, 'Sélectionner un fichier PDF') }}
+                    {{ form_widget(form.rgpdFile, {
+                        'attr': {
+                            'class': 'form-control-file',
+                            'accept': '.pdf'
+                        }
+                    }) }}
+                    <small class="form-hint">Formats acceptés : PDF uniquement</small>
+                    {% if form.rgpdFile.vars.errors %}
+                        <div class="form-error">
+                            {{ form_errors(form.rgpdFile) }}
+                        </div>
+                    {% endif %}
+                </div>
 
-    {{ form_row(form.removeRgpd) }}
+                {% if form.vars.data.rgpdFile %}
+                    <div class="current-file">
+                        <div class="file-info">
+                            <span class="file-icon">📄</span>
+                            <div class="file-details">
+                                <label>Fichier actuel :</label>
+                                <a href="{{ asset('uploads/' ~ form.vars.data.rgpdFile) }}" target="_blank" class="file-link">
+                                    Consulter le document
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="removeRgpd" name="{{ form.removeRgpd.vars.full_name }}" value="1" class="checkbox-input">
+                            <label for="removeRgpd" class="checkbox-label">
+                                🗑️ Supprimer le fichier existant
+                            </label>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="no-file-notice">
+                        ℹ️ Aucun document RGPD n'a été téléchargé pour le moment.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-    {% if form.vars.data.rgpdFile %}
-        <p>
-            Fichier actuel :
-            <a href="{{ asset('uploads/' ~ form.vars.data.rgpdFile) }}" target="_blank">
-                Voir le RGPD
-            </a>
-        </p>
-    {% endif %}
+    <!-- Boutons d'action -->
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+            💾 Enregistrer les modifications
+        </button>
+        <a href="{{ path('superadmin_settings_menu') }}" class="btn btn-secondary">
+            ← Retour aux paramètres
+        </a>
+    </div>
 
-    <button class="btn btn-primary">Enregistrer</button>
+    {{ form_end(form) }}
+</div>
 
-{{ form_end(form) }}
+<style>
+    .settings-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .settings-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--main-text-color);
+    }
+
+    .settings-header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 2.5rem;
+        color: var(--main-bg-color);
+        margin: 0 0 0.5rem 0;
+        letter-spacing: 1px;
+    }
+
+    .settings-subtitle {
+        color: #666;
+        font-size: 1.1rem;
+        margin: 0;
+        font-style: italic;
+    }
+
+    .settings-form {
+        background: var(--white);
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .settings-section {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: #fafafa;
+        border-radius: 6px;
+        border-left: 4px solid var(--main-text-color);
+    }
+
+    .section-icon {
+        font-size: 2.5rem;
+        line-height: 1;
+        flex-shrink: 0;
+        width: 60px;
+        text-align: center;
+    }
+
+    .section-content {
+        flex: 1;
+    }
+
+    .section-content h2 {
+        font-size: 1.3rem;
+        color: var(--main-bg-color);
+        margin: 0 0 0.5rem 0;
+        font-weight: 600;
+    }
+
+    .section-description {
+        color: #666;
+        margin: 0 0 1.5rem 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .section-divider {
+        border: none;
+        border-top: 1px solid #ddd;
+        margin: 2rem 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--main-bg-color);
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .form-control-editor,
+    .form-control-file {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+        box-sizing: border-box;
+    }
+
+    .form-control-editor:focus,
+    .form-control-file:focus {
+        outline: none;
+        border-color: var(--main-text-color);
+        box-shadow: 0 0 0 3px rgba(183, 159, 99, 0.1);
+    }
+
+    .form-hint {
+        display: block;
+        margin-top: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .form-error {
+        color: #d32f2f;
+        background: #ffebee;
+        padding: 0.75rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .checkbox-group {
+        margin: 1rem 0;
+    }
+
+    .checkbox-input {
+        margin-right: 0.5rem;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .checkbox-label {
+        display: inline;
+        margin: 0;
+        font-weight: 500;
+        color: var(--main-bg-color);
+        cursor: pointer;
+    }
+
+    .current-file {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--white);
+        border-radius: 4px;
+        border: 2px solid #4caf50;
+    }
+
+    .file-info {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .file-icon {
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .file-details label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .file-link {
+        color: #1976d2;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s;
+    }
+
+    .file-link:hover {
+        color: #0d47a1;
+        text-decoration: underline;
+    }
+
+    .no-file-notice {
+        padding: 1rem;
+        background: #e3f2fd;
+        border-radius: 4px;
+        color: #1565c0;
+        border-left: 4px solid #1976d2;
+        margin-top: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background: var(--main-bg-color);
+        color: var(--main-text-color);
+        flex: 1;
+    }
+
+    .btn-primary:hover {
+        background: var(--main-text-color);
+        color: var(--main-bg-color);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+        background: #e0e0e0;
+        color: var(--main-bg-color);
+    }
+
+    .btn-secondary:hover {
+        background: #d0d0d0;
+    }
+
+    @media (max-width: 768px) {
+        .settings-container {
+            padding: 0 0.5rem;
+        }
+
+        .settings-form {
+            padding: 1rem;
+        }
+
+        .settings-section {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section-icon {
+            text-align: left;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            justify-content: center;
+        }
+
+        .file-info {
+            flex-direction: column;
+        }
+    }
+</style>
 {% endblock %}
