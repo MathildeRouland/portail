@@ -74,9 +74,12 @@ final class LinkController extends AbstractController
             $link->setFourRandomCharacters($code);
             
             // Créer l'URL
-            $baseUrl = $request->getSchemeAndHttpHost(); // Ex: http://localhost
-            $url = $baseUrl . "/open/" . urlencode($link->getCustomerName()) . '-' . $code;
-            $link->setUrl($url);
+           //$baseUrl = $request->getSchemeAndHttpHost(); // Ex: http://localhost
+            //$url = $baseUrl . "/open/" . urlencode($link->getCustomerName()) . '-' . $code;
+            //$link->setUrl($url);
+            $path = "/open/" . urlencode($link->getCustomerName()) . '-' . $code;
+            $link->setUrl($path);
+            $displayUrl = $request->getSchemeAndHttpHost() . $path; // uniquement pour l'affichage
             
             // Définir automatiquement creator/updater 
             if (!$link->getCreator()) {
@@ -105,7 +108,8 @@ final class LinkController extends AbstractController
             $em->flush();
             
             return $this->render('link/success.html.twig', [
-                'generated_url' => $url,
+                //'generated_url' => $url,
+                'generated_url' => $displayUrl,
                 'is_permanent' => $link->isPermanent(),
                 'start_date' => $link->getStartDate(),
                 'end_date' => $link->getEndDate(),
@@ -126,9 +130,11 @@ final class LinkController extends AbstractController
     #[Route('/open/{fullUrl}', name: 'link_open', methods: ['GET'])]
     public function showOpenPage(string $fullUrl, Request $request, EntityManagerInterface $em): Response
     {
-        $currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
+       //$currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
 
-        $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+        //$link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+        $path = '/open/' . $fullUrl;
+        $link = $em->getRepository(Link::class)->findOneBy(['url' => $path]);
         $settings = $em->getRepository(Settings::class)->findOneBy([]);
 
         if (!$link) {
@@ -153,12 +159,14 @@ final class LinkController extends AbstractController
         
            
         // Recréer l'URL complète attendue
-        $currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
-
+        //$currentUrl = $request->getSchemeAndHttpHost() . '/open/' . $fullUrl;
+        $path = '/open/' . $fullUrl;
          if (!$request->request->get('rgpdConsent')) {
 
             $settings = $em->getRepository(Settings::class)->findOneBy([]);
-            $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+            //$link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+            $link = $em->getRepository(Link::class)->findOneBy(['url' => $path]);
+
 
             return $this->render('link/confirm_open.html.twig', [
                 'link' => $link,
@@ -170,8 +178,9 @@ final class LinkController extends AbstractController
         }
         
         // Chercher le lien en base via l'URL complète
-        $link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
-        
+        //$link = $em->getRepository(Link::class)->findOneBy(['url' => $currentUrl]);
+        $link = $em->getRepository(Link::class)->findOneBy(['url' => $path]);
+
         if (!$link) {
             return $this->redirectToRoute('homepage'); // lien inexistant
         }
