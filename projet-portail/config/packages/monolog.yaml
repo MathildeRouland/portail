@@ -1,0 +1,37 @@
+monolog:
+    channels:
+        - crud
+        - cron
+        
+    handlers:
+        # Logs des opérations CRUD
+        crud:
+            type: rotating_file
+            path: '%kernel.logs_dir%/crud.log'
+            level: debug
+            max_files: 12
+            channels: [crud]
+                
+        # Logs de la tâche cron
+        cron:
+            type: rotating_file
+            path: '%kernel.logs_dir%/cron.log'
+            level: debug
+            max_files: 12
+            channels: [cron]
+        
+        # Erreurs CRUD
+        crud_error:
+            type: rotating_file
+            path: '%kernel.logs_dir%/crud-error.log'
+            level: error
+            max_files: 12
+            channels: [crud]
+            
+        # Erreurs CRON
+        cron_error:
+            type: rotating_file
+            path: '%kernel.logs_dir%/cron-error.log'
+            level: error
+            max_files: 12
+            channels: [cron]
