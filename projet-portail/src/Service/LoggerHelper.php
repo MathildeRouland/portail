@@ -6,7 +6,10 @@ use Psr\Log\LoggerInterface;
 
 class LoggerHelper
 {
-    public function __construct(private LoggerInterface $logger) {}
+    public function __construct(
+        private LoggerInterface $logger,
+        private ?MailerService $mailerService = null
+    ) {}
 
     /**
      * Enregistre une erreur avec les détails du fichier, ligne et fonction
@@ -40,6 +43,18 @@ class LoggerHelper
         ]);
         
         $this->logger->error($detailedMessage, $enrichedContext);
+        
+        // Envoyer l'erreur par email
+        if ($this->mailerService) {
+            $this->mailerService->sendErrorLog(
+                $message,
+                $file,
+                $line,
+                $functionName,
+                $exception->getMessage(),
+                $exception->getTraceAsString()
+            );
+        }
     }
 
     /**
