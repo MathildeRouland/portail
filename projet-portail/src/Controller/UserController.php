@@ -5,8 +5,6 @@ namespace App\Controller;
 use App\Repository\UserRepository;
 use App\Entity\User;
 use App\Service\LoggerHelper;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,32 +14,18 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Security\Csrf\CsrfToken;
 use App\Form\PasswordChangeFormType;
 use App\Form\UserType;
 use Symfony\Component\Form\FormError;
 
 final class UserController extends AbstractController
 {
-    // #[Route('/user', name: 'app_user')]
-    // public function index(): JsonResponse
-    // {
-    //     return $this->json([
-    //         'message' => 'Welcome to your new controller!',
-    //         'path' => 'src/Controller/UserController.php',
-    //     ]);
-    // }
-    
-
     #[Route('/users', name: 'user_browse')]
     public function browse(UserRepository $userRepository): Response
-{
-     // Récupérer tous les utilisateurs
-     $users = $userRepository->findAll();
-
-     // Passer les utilisateurs au template
-     return $this->render('user/browse.html.twig', [
+    {
+        // Récupérer tous les utilisateurs
+        $users = $userRepository->findAll();
+        return $this->render('user/browse.html.twig', [
          'users' => $users,
     ]);
 }
@@ -52,11 +36,8 @@ public function createUser(
     UserRepository $userRepository,
     UserPasswordHasherInterface $passwordHasher,
     EntityManagerInterface $entityManager,
-    CsrfTokenManagerInterface $csrfTokenManager,
-    #[Autowire(service: 'monolog.logger.crud')]
-    LoggerInterface $logger
+    LoggerHelper $loggerHelper
 ): Response {
-    $loggerHelper = new LoggerHelper($logger);
     
     // Vérification que seul un ROLE_SUPER_ADMIN peut créer des utilisateurs
     try {
@@ -73,13 +54,6 @@ public function createUser(
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Vérification explicite du token CSRF
-            $submittedToken = $request->request->get('_csrf_token');
-            if (!$csrfTokenManager->isTokenValid(new CsrfToken('create_user', $submittedToken))) {
-                throw new \RuntimeException('Jeton CSRF invalide.');
-            }
-            
-            // Hash du mot de passe
             $plainPassword = $form->get('password')->getData();
             $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($hashedPassword);
@@ -108,9 +82,8 @@ public function createUser(
 }
 
 #[Route('/users/{id}/edit', name: 'user_edit')]
-public function updateUser(Request $request, EntityManagerInterface $em, Security $security,  UserPasswordHasherInterface $passwordHasher, #[Autowire(service: 'monolog.logger.crud')] LoggerInterface $logger, int $id): Response
+public function updateUser(Request $request, EntityManagerInterface $em, Security $security, UserPasswordHasherInterface $passwordHasher, LoggerHelper $loggerHelper, int $id): Response
 {
-    $loggerHelper = new LoggerHelper($logger);
     
     try {
         // Récupérer l'utilisateur à modifier
@@ -130,14 +103,13 @@ public function updateUser(Request $request, EntityManagerInterface $em, Securit
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hash du mot de passe si un nouveau mot de passe est fourni
             $plainPassword = $form->get('password')->getData();
             if ($plainPassword) {
-            $hashedPassword = $passwordHasher->hashPassword($userToUpdate, $plainPassword);
+                // Hash du mot de passe si un nouveau mot de passe est fourni
+                $hashedPassword = $passwordHasher->hashPassword($userToUpdate, $plainPassword);
             $userToUpdate->setPassword($hashedPassword);
             }
 
-            // Récupérer le rôle sélectionné
             $role = $form->get('roles')->getData();
             $userToUpdate->setRoles([$role]);
 
@@ -163,10 +135,8 @@ public function updateUser(Request $request, EntityManagerInterface $em, Securit
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
-        #[Autowire(service: 'monolog.logger.crud')]
-        LoggerInterface $logger,
+        LoggerHelper $loggerHelper,
     ): Response {
-        $loggerHelper = new LoggerHelper($logger);
         
         try {
             /** @var \App\Entity\User $user */
@@ -215,9 +185,8 @@ public function updateUser(Request $request, EntityManagerInterface $em, Securit
     }
 
     #[Route('/users/{id}/delete', name: 'user_delete', methods: ['POST'])]
-    public function deleteUser(Request $request, EntityManagerInterface $em, #[Autowire(service: 'monolog.logger.crud')] LoggerInterface $logger, int $id): Response
+    public function deleteUser(Request $request, EntityManagerInterface $em, LoggerHelper $loggerHelper, int $id): Response
     {
-        $loggerHelper = new LoggerHelper($logger);
         
         try {
             $userToDelete = $em->getRepository(User::class)->find($id);

@@ -18,7 +18,10 @@ class Link
     private ?int $id = null;
 
     #[Assert\Length(max: 255)]
-    #[Assert\Url]
+    #[Assert\Regex(
+        pattern: "/^(https?:\/\/[^\s]+|\/[^\s]*)$/",
+        message: "L'URL doit être valide (absolue ou relative)."
+    )]
     #[ORM\Column(length: 255)]
     private ?string $url = null;
 
@@ -273,14 +276,14 @@ class Link
     }
     
     /**
-     * Vérifie si le lien est encore valide (date de fin non passée)
+     * Vérifie si le lien est encore valide à la date actuelle.
+     * N'a pas d'effet de bord (ne modifie pas l'objet).
      * 
      * @return bool True si le lien est valide, False sinon
      */
     public function isValid(): bool
     {
-        $this->updateStatus();
-        return $this->status;
+        return $this->isActiveAt(new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris')));
     }
 
     /**
@@ -319,19 +322,4 @@ class Link
 
         return true;
     }
-
-    public function isCurrentlyActive(): bool
-{
-    $now = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
-
-    if ($this->getStartDate() && $this->getStartDate() > $now) {
-        return false;
-    }
-
-    if ($this->getEndDate() && $this->getEndDate() < $now) {
-        return false;
-    }
-
-    return true;
-}
 }

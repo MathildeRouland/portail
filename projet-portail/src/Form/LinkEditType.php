@@ -3,8 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Link;
-use App\Entity\User;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -17,9 +15,6 @@ class LinkEditType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var User|null $currentUser */
-        $currentUser = $options['current_user'];
-
         $builder
             ->add('customerName', TextType::class, [
                 'label' => 'Nom du client',

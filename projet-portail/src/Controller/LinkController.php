@@ -7,8 +7,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use App\Service\LoggerHelper;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -22,19 +20,10 @@ use App\Entity\Settings;
 
 final class LinkController extends AbstractController
 {
-    //     #[Route('/link', name: 'app_link')]
-    //     public function index(): Response
-    //     {
-    //         return $this->render('link/index.html.twig', [
-    //             'controller_name' => 'LinkController',
-    //         ]);
-    //     }
-    
     #[Route('/links', name: 'link_browse')]
     public function browse(LinkRepository $linkRepository, Security $security): Response
     {
-        $user = $security->getUser();
-        
+        $user = $this->getUser();
         // Si c'est un super admin, on peut afficher tous les liens
         if ($this->isGranted('ROLE_SUPER_ADMIN')) {
             $links = $linkRepository->findAll();
@@ -42,8 +31,6 @@ final class LinkController extends AbstractController
             // Sinon, on ne récupère que les liens créés par l'utilisateur connecté
             $links = $linkRepository->findBy(['creator' => $user]);
         }
-        
-        // Passer les liens et l'utilisateur au template
         return $this->render('link/browse.html.twig', [
             'links' => $links,
             'user' => $user
@@ -51,16 +38,13 @@ final class LinkController extends AbstractController
     }
     
     #[Route('/links/create', name: 'link_create')]
-    public function createLink(Request $request, EntityManagerInterface $em, Security $security, #[Autowire(service: 'monolog.logger.crud')] LoggerInterface $logger): Response
+    public function createLink(Request $request, EntityManagerInterface $em, Security $security, LoggerHelper $loggerHelper): Response
     {
-        $loggerHelper = new LoggerHelper($logger);
-        
         try {
             // Créer une nouvelle instance de Link
             $link = new Link();
-            
             // Assigner l'utilisateur connecté comme créateur
-            $user = $security->getUser();
+            $user = $this->getUser();
             if ($user) {
                 $link->setCreator($user);
             } else {
@@ -72,6 +56,7 @@ final class LinkController extends AbstractController
                 'current_user' => $this->getUser(),
                 'validation_groups' => ['Default', 'create'],
             ]);
+            // Traiter le formulaire
             $form->handleRequest($request);
             
             if ($form->isSubmitted() && $form->isValid()) {
@@ -159,10 +144,8 @@ final class LinkController extends AbstractController
         string $fullUrl, 
         Request $request, 
         EntityManagerInterface $em,
-        #[Autowire(service: 'monolog.logger.crud')]
-        LoggerInterface $logger
+        LoggerHelper $loggerHelper
     ): Response {
-        $loggerHelper = new LoggerHelper($logger);
         
         try {
             $path = '/open/' . $fullUrl;
@@ -181,16 +164,13 @@ final class LinkController extends AbstractController
                 ]);
             }
             
-            // Chercher le lien en base via l'URL complète
             $link = $em->getRepository(Link::class)->findOneBy(['url' => $path]);
-
             if (!$link) {
                 return $this->redirectToRoute('homepage');
             }
             
-           // utilisation de DateTimeImmutable pour comparaison non destructive
+            // Utilisation de DateTimeImmutable pour comparaison non destructive
             $now = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
-
             $status = $link->isActiveAt($now);
             
             // Enregistrer l'ouverture dans l'historique
@@ -221,7 +201,53 @@ final class LinkController extends AbstractController
             if ($status) {
                 $duration = 2; // secondes
                 $command = escapeshellcmd('python3 ' . $this->getParameter('kernel.project_dir') . '/test_gpio.py ' . $duration);
-                exec($command);
+                
+                // Capturer stdout et stderr séparément
+                $descriptor_spec = [
+                    1 => ['pipe', 'w'],  // stdout
+                    2 => ['pipe', 'w'],  // stderr
+                ];
+                
+                $process = proc_open($command, $descriptor_spec, $pipes);
+                
+                if (is_resource($process)) {
+                    $output = stream_get_contents($pipes[1]);
+                    $error = stream_get_contents($pipes[2]);
+                    fclose($pipes[1]);
+                    fclose($pipes[2]);
+                    $returnCode = proc_close($process);
+                    
+                    if ($returnCode !== 0 || !empty($error)) {
+                        $loggerHelper->logError('Erreur GPIO lors de l\'ouverture du portail', 
+                            new \Exception('GPIO Error'), 
+                            [
+                                'returnCode' => $returnCode,
+                                'stdout' => $output,
+                                'stderr' => $error,
+                                'customerName' => $link->getCustomerName(),
+                                'linkId' => $link->getId()
+                            ]
+                        );
+                        // Retourner une page d'erreur au lieu de succès
+                        return $this->render('link/error.html.twig', [
+                            'message' => 'Erreur système : le portail ne peut pas être ouvert.',
+                        ]);
+                    } else {
+                        $loggerHelper->logInfo('Portail ouvert avec succès via GPIO', [
+                            'customerName' => $link->getCustomerName(),
+                            'linkId' => $link->getId(),
+                            'duration' => $duration
+                        ]);
+                    }
+                } else {
+                    $loggerHelper->logError('Impossible de lancer le script GPIO', 
+                        new \Exception('proc_open failed'), 
+                        ['command' => $command]
+                    );
+                    return $this->render('link/error.html.twig', [
+                        'message' => 'Erreur système : impossible de contrôler le portail.',
+                    ]);
+                }
             }
             
             // Affichage de la page
@@ -240,9 +266,8 @@ final class LinkController extends AbstractController
 
     
     #[Route('/links/{id}/edit', name: 'link_edit')]
-    public function updateLink(Request $request, EntityManagerInterface $em, Security $security, #[Autowire(service: 'monolog.logger.crud')] LoggerInterface $logger, int $id): Response
+    public function updateLink(Request $request, EntityManagerInterface $em, Security $security, LoggerHelper $loggerHelper, int $id): Response
     {
-        $loggerHelper = new LoggerHelper($logger);
         
         try {
             // Assigner l'utilisateur connecté comme modificateur
@@ -251,10 +276,7 @@ final class LinkController extends AbstractController
                 return $this->redirectToRoute('app_login');
             }
             
-            // Récupérer le lien existant
             $link = $em->getRepository(Link::class)->find($id);
-            
-            // Vérifier si le lien existe
             if (!$link) {
                 throw $this->createNotFoundException('Le lien demandé n\'existe pas');
             }
@@ -269,14 +291,27 @@ final class LinkController extends AbstractController
                 'current_user' => $user,
             ]);
             
-            // Traiter le formulaire
             $form->handleRequest($request);
-            
+            //dump($form->getErrors(true));
+            //die();
             if ($form->isSubmitted() && $form->isValid()) {
+                // Convertir les dates en DateTimeImmutable si nécessaire
+                //$start = $form->get('startDate')->getData();
+                //$end = $form->get('endDate')->getData();
+
+                //if ($start instanceof \DateTimeInterface && !$start instanceof \DateTimeImmutable) {
+                  //  $start = (new \DateTimeImmutable($start->format('Y-m-d H:i:s'), new \DateTimeZone('Europe/Paris')));
+                   // $link->setStartDate($start);
+                //}
+
+                //if ($end instanceof \DateTimeInterface && !$end instanceof \DateTimeImmutable) {
+                  //  $end = (new \DateTimeImmutable($end->format('Y-m-d H:i:s'), new \DateTimeZone('Europe/Paris')));
+                   // $link->setEndDate($end);
+               // }
+                
                 // Mettre à jour l'utilisateur qui modifie le lien
                 $link->setUpdater($user);
                 
-                // Enregistrer les modifications
                 $em->persist($link);
                 $em->flush();
                 
@@ -298,9 +333,8 @@ final class LinkController extends AbstractController
     }
 
     #[Route('/links/{id}/delete', name: 'link_delete', methods: ['POST'])]
-    public function deleteLink(Request $request, EntityManagerInterface $em, CsrfTokenManagerInterface $csrfTokenManager, #[Autowire(service: 'monolog.logger.crud')] LoggerInterface $logger, int $id): Response
+    public function deleteLink(Request $request, EntityManagerInterface $em, CsrfTokenManagerInterface $csrfTokenManager, LoggerHelper $loggerHelper, int $id): Response
     {
-        $loggerHelper = new LoggerHelper($logger);
         
         try {
             $link = $em->getRepository(Link::class)->find($id);
