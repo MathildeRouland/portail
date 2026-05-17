@@ -6,6 +6,7 @@ use App\Entity\OpeningHistory;
 use App\Repository\OpeningHistoryRepository;
 use App\Service\LoggerHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\MailerService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -27,6 +28,7 @@ class CleanOpeningHistoryCommand extends Command
         private OpeningHistoryRepository $openingHistoryRepository,
         #[Autowire(service: 'monolog.logger.cron')]
         private LoggerInterface $logger,
+        private MailerService $mailerService,
     ) {
         parent::__construct();
     }
@@ -46,7 +48,7 @@ class CleanOpeningHistoryCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $loggerHelper = new LoggerHelper($this->logger);
+        $loggerHelper = new LoggerHelper($this->logger, $this->mailerService);
 
         try {
             // Récupérer le nombre de mois depuis l'option

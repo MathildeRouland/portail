@@ -5,6 +5,7 @@ namespace App\Service;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class MailerService
 {
@@ -13,6 +14,7 @@ class MailerService
 
     public function __construct(
         private MailerInterface $mailer,
+        #[Autowire(service: 'monolog.logger.crud')]
         private LoggerInterface $logger,
         #[\Symfony\Component\DependencyInjection\Attribute\Autowire('%env(MAILER_ERROR_RECIPIENT)%')]
         private string $errorEmailRecipient
@@ -51,6 +53,8 @@ class MailerService
             $this->logger->error('Email send failed after retries', [
                 'attempts' => $retryCount,
                 'error' => $e->getMessage(),
+                'error_code' => $e->getCode(),
+                'error_class' => get_class($e),
                 'to' => $email->getTo(),
                 'subject' => $email->getSubject(),
             ]);

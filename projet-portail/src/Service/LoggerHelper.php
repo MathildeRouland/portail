@@ -8,7 +8,7 @@ class LoggerHelper
 {
     public function __construct(
         private LoggerInterface $logger,
-        private ?MailerService $mailerService = null
+        private MailerService $mailerService
     ) {}
 
     /**
@@ -45,15 +45,19 @@ class LoggerHelper
         $this->logger->error($detailedMessage, $enrichedContext);
         
         // Envoyer l'erreur par email
-        if ($this->mailerService) {
-            $this->mailerService->sendErrorLog(
-                $message,
-                $file,
-                $line,
-                $functionName,
-                $exception->getMessage(),
-                $exception->getTraceAsString()
-            );
+        $emailSent = $this->mailerService->sendErrorLog(
+            $message,
+            $file,
+            $line,
+            $functionName,
+            $exception->getMessage(),
+            $exception->getTraceAsString()
+        );
+        
+        if ($emailSent) {
+            $this->logger->info('Erreur loggée et email envoyé avec succès');
+        } else {
+            $this->logger->error('Email d\'erreur n\'a pas pu être envoyé');
         }
     }
 
